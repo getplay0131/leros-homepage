@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leros - 삶에 여유의 한 조각을</title>
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,600,700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --color-bg: #faf9f6;
+      --color-primary: #5e9e72;
+      --color-accent: #e07b6a;
+      --color-text: #28241e;
+      --color-muted: #78736a;
+      --color-border: #e6e2da;
+      --scroll-percent: 0;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Satoshi', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--color-bg);
+      color: var(--color-text);
+      overflow-x: hidden;
+      min-height: 500vh; /* 스크롤 공간 확보 */
+    }
+
+    /* 캔버스 섹션 */
+    .canvas-section {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: fixed;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+    }
+
+    .canvas-section > * {
+      pointer-events: auto;
+    }
+
+    /* 심볼 */
+    .symbol {
+      width: 200px;
+      height: 200px;
+      background: linear-gradient(135deg, rgba(94, 158, 114, 0.1), rgba(224, 123, 106, 0.1));
+      border-radius: 50%;
+      position: absolute;
+      will-change: transform;
+      transform: translateZ(0);
+    }
+
+    /* 텍스트 요소 */
+    .logo {
+      font-size: 48px;
+      font-weight: 700;
+      opacity: 1;
+      will-change: transform, opacity;
+      transform: translateZ(0);
+    }
+
+    .headline {
+      font-size: 32px;
+      font-weight: 600;
+      opacity: 0;
+      position: absolute;
+      text-align: center;
+      max-width: 600px;
+      padding: 0 20px;
+      will-change: transform, opacity;
+      transform: translateZ(0);
+    }
+
+    .philosophy {
+      font-size: 18px;
+      line-height: 1.8;
+      opacity: 0;
+      position: absolute;
+      text-align: center;
+      max-width: 500px;
+      padding: 0 20px;
+      color: var(--color-muted);
+      will-change: transform, opacity;
+      transform: translateZ(0);
+    }
+
+    /* 프로젝트 카드 */
+    .project-card {
+      background: white;
+      border-radius: 16px;
+      padding: 32px;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+      opacity: 0;
+      position: absolute;
+      text-align: center;
+      will-change: transform, opacity;
+      transform: translateZ(0);
+    }
+
+    .project-icon {
+      width: 130px;
+      height: 130px;
+      margin: 0 auto 20px;
+      background: linear-gradient(135deg, #ffd6e8, #c8e7ff, #d4f4dd);
+      border-radius: 24px;
+      will-change: transform;
+      transform: translateZ(0);
+    }
+
+    .project-name {
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .project-desc {
+      font-size: 16px;
+      color: var(--color-muted);
+      margin-bottom: 16px;
+    }
+
+    .badge {
+      display: inline-block;
+      background: var(--color-accent);
+      color: white;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 4px 12px;
+      border-radius: 20px;
+    }
+
+    /* Contact */
+    .contact {
+      opacity: 0;
+      position: absolute;
+      will-change: transform, opacity;
+      transform: translateZ(0);
+    }
+
+    .contact a {
+      color: var(--color-primary);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 18px;
+    }
+
+    /* Underground Menu */
+    .underground-trigger {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 5vh;
+      z-index: 100;
+      cursor: pointer;
+    }
+
+    .underground-menu {
+      position: fixed;
+      bottom: -100%;
+      left: 0;
+      right: 0;
+      background: rgba(40, 36, 30, 0.95);
+      backdrop-filter: blur(10px);
+      color: white;
+      padding: 40px 20px 20px;
+      transition: bottom 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+      z-index: 99;
+    }
+
+    .underground-menu.visible {
+      bottom: 0;
+    }
+
+    .underground-content {
+      max-width: 600px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .underground-links {
+      margin-top: 20px;
+    }
+
+    .underground-links a {
+      color: white;
+      text-decoration: none;
+      margin: 0 16px;
+      opacity: 0.8;
+      transition: opacity 0.3s;
+    }
+
+    .underground-links a:hover {
+      opacity: 1;
+    }
+
+    /* 모바일 대응 */
+    @media (max-width: 768px) {
+      .logo {
+        font-size: 36px;
+      }
+
+      .headline {
+        font-size: 24px;
+      }
+
+      .philosophy {
+        font-size: 16px;
+      }
+
+      .project-card {
+        padding: 24px;
+      }
+
+      .underground-trigger {
+        height: 10vh;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Logo (첫 화면) -->
+  <div class="canvas-section">
+    <div class="logo">Leros</div>
+  </div>
+
+  <!-- Symbol & Headline (10-30% 스크롤) -->
+  <div class="canvas-section">
+    <div class="symbol"></div>
+    <div class="headline">삶에 여유의 한 조각을</div>
+  </div>
+
+  <!-- Philosophy (30-50% 스크롤) -->
+  <div class="canvas-section">
+    <div class="philosophy">
+      레로스(Leros)는 고대 그리스어 '여유'와 '조각'을 결합한 이름입니다.<br>
+      나와 가족, 임직원과 고객 모두의 삶에<br>
+      여유의 한 조각을 더해주는 가치를 만듭니다.
+    </div>
+  </div>
+
+  <!-- Project (50-70% 스크롤) -->
+  <div class="canvas-section">
+    <div class="project-card">
+      <div class="project-icon"></div>
+      <div class="project-name">무지개숲</div>
+      <div class="project-desc">6~10세 아이가 직접 만들고 플레이하는 창작 플랫폼</div>
+      <div class="badge">출시 예정</div>
+    </div>
+  </div>
+
+  <!-- Contact (70-90% 스크롤) -->
+  <div class="canvas-section">
+    <div class="contact">
+      <a href="mailto:contact@leros.kr">contact@leros.kr</a>
+    </div>
+  </div>
+
+  <!-- Underground Menu Trigger -->
+  <div class="underground-trigger"></div>
+
+  <!-- Underground Menu -->
+  <div class="underground-menu">
+    <div class="underground-content">
+      <div>© 2026 레로스 | 대표자: 윤승현</div>
+      <div class="underground-links">
+        <a href="privacy.html">개인정보처리방침</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Scroll Observer
+    let ticking = false;
+    
+    function updateScroll() {
+      const scrollPercent = window.scrollY / (document.body.scrollHeight - window.innerHeight);
+      
+      // CSS 변수 업데이트
+      document.documentElement.style.setProperty('--scroll-percent', scrollPercent);
+      
+      // 심볼 확장
+      const symbol = document.querySelector('.symbol');
+      const scale = 1 + (scrollPercent * 2); // 1 → 3 확대
+      symbol.style.transform = `scale(${scale})`;
+      
+      // 헤드라인 opacity (10-30%)
+      const headline = document.querySelector('.headline');
+      if (scrollPercent > 0.1 && scrollPercent < 0.3) {
+        const headlineOpacity = (scrollPercent - 0.1) / 0.2;
+        headline.style.opacity = headlineOpacity;
+      } else if (scrollPercent >= 0.3) {
+        headline.style.opacity = 1;
+      }
+      
+      // 철학 opacity (30-50%)
+      const philosophy = document.querySelector('.philosophy');
+      if (scrollPercent > 0.3 && scrollPercent < 0.5) {
+        const philosophyOpacity = (scrollPercent - 0.3) / 0.2;
+        philosophy.style.opacity = philosophyOpacity;
+      } else if (scrollPercent >= 0.5) {
+        philosophy.style.opacity = 1;
+      }
+      
+      // 프로젝트 카드 opacity (50-70%)
+      const projectCard = document.querySelector('.project-card');
+      if (scrollPercent > 0.5 && scrollPercent < 0.7) {
+        const projectOpacity = (scrollPercent - 0.5) / 0.2;
+        projectCard.style.opacity = projectOpacity;
+      } else if (scrollPercent >= 0.7) {
+        projectCard.style.opacity = 1;
+      }
+      
+      // Contact opacity (70-90%)
+      const contact = document.querySelector('.contact');
+      if (scrollPercent > 0.7 && scrollPercent < 0.9) {
+        const contactOpacity = (scrollPercent - 0.7) / 0.2;
+        contact.style.opacity = contactOpacity;
+      } else if (scrollPercent >= 0.9) {
+        contact.style.opacity = 1;
+      }
+      
+      // Logo fade out (스크롤 시)
+      const logo = document.querySelector('.logo');
+      if (scrollPercent > 0.05) {
+        const logoOpacity = Math.max(0, 1 - (scrollPercent * 5));
+        logo.style.opacity = logoOpacity;
+      }
+      
+      ticking = false;
+    }
+    
+    function requestTick() {
+      if (!ticking) {
+        requestAnimationFrame(updateScroll);
+        ticking = true;
+      }
+    }
+    
+    window.addEventListener('scroll', requestTick);
+    
+    // Underground Menu 호버
+    const triggerZone = document.querySelector('.underground-trigger');
+    const menu = document.querySelector('.underground-menu');
+    
+    triggerZone.addEventListener('mouseenter', () => {
+      menu.classList.add('visible');
+    });
+    
+    triggerZone.addEventListener('mouseleave', () => {
+      menu.classList.remove('visible');
+    });
+    
+    // 모바일 터치 대응
+    let touchTimer;
+    triggerZone.addEventListener('touchstart', () => {
+      touchTimer = setTimeout(() => {
+        menu.classList.add('visible');
+      }, 300);
+    });
+    
+    document.addEventListener('touchend', () => {
+      clearTimeout(touchTimer);
+      setTimeout(() => {
+        if (!triggerZone.matches(':hover')) {
+          menu.classList.remove('visible');
+        }
+      }, 100);
+    });
+  </script>
+</body>
+</html>

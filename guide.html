@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Leros Canvas 제작 가이드</title>
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,600,700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#faf9f6;--surface:#fff;--surface2:#f5f3ee;--border:#e6e2da;
+  --text:#28241e;--muted:#78736a;--faint:#b4aea6;
+  --green:#5e9e72;--green-l:#e6f2ea;
+  --orange:#e07b6a;--orange-l:#fdf0e7;
+  --blue:#5a89c8;--blue-l:#eaf0fb;
+  --purple:#7a5fbf;--purple-l:#f0ecfa;
+  --radius:14px;--radius-sm:8px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Satoshi',sans-serif;background:var(--bg);color:var(--text);font-size:15px;line-height:1.7;padding:40px 20px 80px}
+.wrap{max-width:760px;margin:0 auto}
+
+.header{background:linear-gradient(140deg,#e9f4ed,#fdf0e7 60%,#eef2fb);border-radius:20px;padding:44px 40px;margin-bottom:28px;border:1px solid var(--border)}
+.pill{display:inline-block;background:var(--green);color:#fff;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:4px 12px;border-radius:99px;margin-bottom:14px}
+.header h1{font-size:26px;font-weight:700;margin-bottom:8px}
+.header p{color:var(--muted);font-size:14px}
+
+section{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);padding:28px 32px;margin-bottom:16px}
+.sec-title{display:flex;align-items:center;gap:10px;font-size:17px;font-weight:700;padding-bottom:14px;border-bottom:1px solid var(--border);margin-bottom:20px}
+.num{width:30px;height:30px;border-radius:50%;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0}
+
+.step{display:flex;gap:14px;margin-bottom:18px;padding-bottom:18px;border-bottom:1px solid var(--border)}
+.step:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+.step-num{width:28px;height:28px;background:var(--surface2);border:1px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--muted);flex-shrink:0;margin-top:2px}
+.step-body h4{font-size:14px;font-weight:700;margin-bottom:4px}
+.step-body p{font-size:13.5px;color:var(--muted);line-height:1.7}
+
+code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--surface2);border:1px solid var(--border);padding:2px 7px;border-radius:4px;color:#5a3fa0}
+pre{background:#1c1b19;color:#cdccca;border-radius:var(--radius-sm);padding:18px 20px;font-size:13px;line-height:1.8;overflow-x:auto;margin:12px 0;font-family:'JetBrains Mono',monospace}
+pre .c{color:#6a8a6a}
+pre .k{color:#f0883e}
+pre .s{color:#39d353}
+pre .t{color:#58a6ff}
+
+.note{border-left:3px solid var(--green);background:var(--green-l);border-radius:0 var(--radius-sm) var(--radius-sm) 0;padding:12px 16px;font-size:13.5px;margin:12px 0}
+.note.warn{border-color:var(--orange);background:var(--orange-l)}
+.note.tip{border-color:var(--purple);background:var(--purple-l)}
+.note.info{border-color:var(--blue);background:var(--blue-l)}
+
+.file-tree{background:#1c1b19;color:#cdccca;border-radius:var(--radius-sm);padding:16px 20px;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:2;margin:12px 0}
+.file-tree .dir{color:#58a6ff}
+.file-tree .file{color:#39d353}
+.file-tree .comment{color:#6a8a6a}
+
+.check-list{list-style:none;padding:0}
+.check-list li{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:14px}
+.check-list li:last-child{border-bottom:none}
+.check-list .box{width:18px;height:18px;border:2px solid var(--border);border-radius:4px;flex-shrink:0;margin-top:2px}
+
+table{width:100%;border-collapse:collapse;font-size:13.5px;margin:12px 0}
+th{background:var(--surface2);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:9px 14px;text-align:left;border-bottom:1px solid var(--border)}
+td{padding:10px 14px;border-bottom:1px solid #f0ece6;vertical-align:top}
+tr:last-child td{border-bottom:none}
+
+.tag{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px}
+.t-g{background:var(--green-l);color:#2e6b40}
+.t-o{background:var(--orange-l);color:#a04020}
+.t-b{background:var(--blue-l);color:#2a4f8a}
+
+.footer{text-align:center;color:var(--faint);font-size:12px;margin-top:36px}
+
+@media(max-width:560px){.header{padding:28px 20px}section{padding:20px 18px}}
+</style>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="wrap">
+
+<div class="header">
+  <div class="pill">The Leros Canvas 제작 가이드 v1.0</div>
+  <h1>leros.kr 혁신적 홈페이지 만들기</h1>
+  <p>커서 / 윈드서프 + Claude · GitHub Pages 배포 · 가비아 도메인 연결<br>Play Console 심사 통과 + 예술적 브랜딩 목적</p>
+</div>
+
+<!-- 0. 현재 상태 -->
+<section>
+  <div class="sec-title"><div class="num">0</div>현재 상태 & 준비물 확인</div>
+  <table>
+    <tr><th>항목</th><th>상태</th><th>홈페이지 처리</th></tr>
+    <tr><td>leros.kr 도메인</td><td><span class="tag t-g">완료</span></td><td>가비아 DNS 설정만 하면 됨</td></tr>
+    <tr><td>개인정보처리방침</td><td><span class="tag t-o">제작중</span></td><td>privacy.html에 "준비중" 표시, 링크는 유지</td></tr>
+    <tr><td>레로스 로고</td><td><span class="tag t-o">초안</span></td><td>텍스트 로고로 임시 대체</td></tr>
+    <tr><td>무지개숲 아이콘</td><td><span class="tag t-o">외주중</span></td><td>placeholder div로 대체, 완성 후 img 교체</td></tr>
+  </table>
+  <div class="note info">Play Console 심사에서 개인정보처리방침 <strong>링크가 작동</strong>하면 됩니다. 내용이 "준비중"이어도 심사 통과 사례 있음.</div>
+</section>
+
+<!-- 1. 파일 구조 -->
+<section>
+  <div class="sec-title"><div class="num">1</div>파일 구조 & 초기 설정</div>
+  <div class="file-tree">
+<span class="dir">leros-homepage/</span>
+├── <span class="file">index.html</span>        <span class="comment">← The Leros Canvas (Zero-Layout)</span>
+├── <span class="file">privacy.html</span>      <span class="comment">← 개인정보처리방침</span>
+├── <span class="file">guide.html</span>        <span class="comment">← 이 제작 가이드 문서</span>
+└── <span class="dir">assets/</span>
+    ├── <span class="file">icon-rainbow.png</span>  <span class="comment">← 외주 완성 후 교체</span>
+    └── <span class="file">logo-leros.svg</span>   <span class="comment">← 추후 교체</span>
+  </div>
+  <div class="note">GitHub에 <code>leros-homepage</code> 레포지토리를 만들고 이 구조로 시작하세요.</div>
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <h4>GitHub 레포 생성</h4>
+      <p>github.com → New repository → 이름: <code>leros-homepage</code> → Public → Create</p>
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <h4>커서에서 폴더 열기</h4>
+      <p>커서 실행 → File → Open Folder → <code>leros-homepage</code> 폴더 선택</p>
+    </div>
+  </div>
+</section>
+
+<!-- 2. The Leros Canvas 구현 -->
+<section>
+  <div class="sec-title"><div class="num">2</div>The Leros Canvas — 혁신적 구현 가이드</div>
+
+  <div class="step">
+    <div class="step-num">①</div>
+    <div class="step-body">
+      <h4>Zero-Layout 구조</h4>
+      <p>전통적인 Header/Footer/Section 경계를 완전히 제거합니다. 모든 콘텐츠는 <code>position: fixed</code>로 고정되고 스크롤에 따라 변형됩니다.</p>
+      <pre><span class="c">/* 핵심 CSS */</span>
+<span class="k">.canvas-section</span> {
+  <span class="t">position</span>: fixed;
+  <span class="t">width</span>: <span class="s">100vw</span>;
+  <span class="t">height</span>: <span class="s">100vh</span>;
+  <span class="t">display</span>: flex;
+  <span class="t">align-items</span>: center;
+  <span class="t">justify-content</span>: center;
+}</pre>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">②</div>
+    <div class="step-body">
+      <h4>Z-Axis Scroll (공간 확장)</h4>
+      <p>스크롤 값을 CSS <code>transform: scale()</code>과 <code>opacity</code>에 매핑하여 '공간을 파고드는' 느낌을 구현합니다.</p>
+      <pre><span class="c">/* Scroll Observer JS */</span>
+<span class="k">window</span>.<span class="t">addEventListener</span>(<span class="s">'scroll'</span>, () => {
+  <span class="k">const</span> scrollPercent = window.scrollY / 
+    (document.body.scrollHeight - window.innerHeight);
+  
+  <span class="c">// 심볼 확장: 1 → 3배</span>
+  symbol.style.transform = `scale(${<span class="s">1</span> + scrollPercent * <span class="s">2</span>})`;
+  
+  <span class="c">// 텍스트 서서히 등장</span>
+  headline.style.opacity = Math.min(scrollPercent * <span class="s">2</span>, <span class="s">1</span>);
+});</pre>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">③</div>
+    <div class="step-body">
+      <h4>Underground Menu (숨겨진 푸터)</h4>
+      <p>화면 하단 5vh 영역에 호버 시에만 법인 정보와 개인정보처리방침이 담긴 메뉴가 슬라이드업으로 등장합니다.</p>
+      <pre><span class="c">/* HTML 구조 */</span>
+<span class="t">&lt;div</span> <span class="k">class</span>=<span class="s">"underground-trigger"</span>&gt;<span class="t">&lt;/div&gt;</span>
+<span class="t">&lt;div</span> <span class="k">class</span>=<span class="s">"underground-menu"</span>&gt;
+  © 레로스 | 대표자: 윤승현
+  &lt;a href=<span class="s">"privacy.html"</span>&gt;개인정보처리방침&lt;/a&gt;
+<span class="t">&lt;/div&gt;</span>
+
+<span class="c">/* CSS */</span>
+<span class="k">.underground-menu</span> {
+  <span class="t">bottom</span>: <span class="s">-100%</span>;
+  <span class="t">transition</span>: bottom <span class="s">0.4s</span> cubic-bezier(<span class="s">0.25, 1, 0.5, 1</span>);
+}
+<span class="k">.underground-menu.visible</span> {
+  <span class="t">bottom</span>: <span class="s">0</span>;
+}</pre>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">④</div>
+    <div class="step-body">
+      <h4>GPU 가속 최적화</h4>
+      <p>모든 애니메이션 요소에 <code>will-change: transform</code>과 <code>transform: translateZ(0)</code>을 적용하여 60fps를 유지합니다.</p>
+      <pre><span class="k">.symbol, .headline, .project-icon</span> {
+  <span class="t">will-change</span>: transform, opacity;
+  <span class="t">transform</span>: translateZ(<span class="s">0</span>);
+}</pre>
+    </div>
+  </div>
+</section>
+
+<!-- 3. 콘텐츠 구성 -->
+<section>
+  <div class="sec-title"><div class="num">3</div>콘텐츠 구성 (스크롤 구간별)</div>
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <h4>첫 화면 (0-5%)</h4>
+      <p>중앙에 "Leros" 텍스트만 표시. 극강의 단순함 (10단어 이하).</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <h4>헤드라인 (10-30%)</h4>
+      <p>심볼 확장과 함께 "삶에 여유의 한 조각을"이 서서히 등장.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      <h4>철학 (30-50%)</h4>
+      <p>레로스 브랜드 철학 2~3문장. 고대 그리스어 '여유'와 '조각'의 의미.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">4</div>
+    <div class="step-body">
+      <h4>프로젝트 (50-70%)</h4>
+      <p>무지개숲 카드 등장. 파스텔 그라데이션 placeholder 아이콘.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">5</div>
+    <div class="step-body">
+      <h4>Contact (70-90%)</h4>
+      <p>이메일 링크 서서히 등장.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 4. privacy.html -->
+<section>
+  <div class="sec-title"><div class="num">4</div>privacy.html — 개인정보처리방침</div>
+  <div class="note warn">Play Console 심사에서 이 링크가 작동해야 합니다. 내용은 나중에 채워도 됩니다.</div>
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <h4>기본 구조</h4>
+      <pre><span class="s">"privacy.html 만들어줘.
+상단에 '무지개숲 개인정보처리방침' 제목,
+본문에 '현재 개인정보처리방침을 준비중입니다. 
+문의사항은 contact@leros.kr로 연락주세요.' 문구,
+index.html과 동일한 디자인 스타일"</span></pre>
+    </div>
+  </div>
+</section>
+
+<!-- 5. GitHub Pages 배포 -->
+<section>
+  <div class="sec-title"><div class="num">5</div>GitHub Pages 배포</div>
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <h4>GitHub에 파일 업로드</h4>
+      <p>커서 터미널에서:</p>
+      <pre><span class="k">git</span> <span class="t">init</span>
+<span class="k">git</span> <span class="t">add</span> .
+<span class="k">git</span> <span class="t">commit</span> -m <span class="s">"The Leros Canvas v1.0"</span>
+<span class="k">git</span> <span class="t">remote add origin</span> https://github.com/[계정]/leros-homepage.git
+<span class="k">git</span> <span class="t">push</span> -u origin main</pre>
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <h4>GitHub Pages 활성화</h4>
+      <p>GitHub 레포 → Settings → Pages → Source: <code>main</code> 브랜치, <code>/ (root)</code> → Save</p>
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      <h4>커스텀 도메인 입력</h4>
+      <p>Pages 설정에서 Custom domain: <code>leros.kr</code> 입력 → Save</p>
+      <p>자동으로 <code>CNAME</code> 파일이 레포에 생성됩니다.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 6. 가비아 DNS 설정 -->
+<section>
+  <div class="sec-title"><div class="num">6</div>가비아 DNS 설정 (leros.kr 연결)</div>
+  <div class="note info">가비아 로그인 → My가비아 → leros.kr → DNS 관리 → DNS 설정</div>
+  <table>
+    <tr><th>타입</th><th>호스트</th><th>값/주소</th><th>TTL</th></tr>
+    <tr><td>A</td><td>@</td><td>185.199.108.153</td><td>600</td></tr>
+    <tr><td>A</td><td>@</td><td>185.199.109.153</td><td>600</td></tr>
+    <tr><td>A</td><td>@</td><td>185.199.110.153</td><td>600</td></tr>
+    <tr><td>A</td><td>@</td><td>185.199.111.153</td><td>600</td></tr>
+    <tr><td>CNAME</td><td>www</td><td>[GitHub계정].github.io</td><td>600</td></tr>
+  </table>
+  <div class="note warn">DNS 반영까지 최대 24시간 소요. 보통 1~2시간 내 적용됩니다.</div>
+</section>
+
+<!-- 7. 최종 체크리스트 -->
+<section>
+  <div class="sec-title"><div class="num">7</div>최종 체크리스트 — 혁신성 검증</div>
+  <ul class="check-list">
+    <li><div class="box"></div>첫 화면 텍스트 10단어 이하 (극강의 단순함)</li>
+    <li><div class="box"></div>스크롤이 '확장'의 느낌 (단순 상하 이동 아님)</li>
+    <li><div class="box"></div>Underground Menu 작동 (하단 5vh 호버 시 노출)</li>
+    <li><div class="box"></div>심사관의 개인정보처리방침 접근 방해 없음</li>
+    <li><div class="box"></div>Zero-Layout 구현 (Header/Footer/Section 경계 제거)</li>
+    <li><div class="box"></div>privacy.html 페이지 존재 (404 아님)</li>
+    <li><div class="box"></div>모바일 375px 정상 렌더링 확인</li>
+    <li><div class="box"></div>데스크탑 1280px 정상 렌더링 확인</li>
+    <li><div class="box"></div>스크롤 애니메이션 60fps 유지</li>
+    <li><div class="box"></div>GitHub Pages 배포 후 접속 확인</li>
+    <li><div class="box"></div>가비아 DNS 설정 완료</li>
+    <li><div class="box"></div>leros.kr 접속 확인 (DNS 반영 후)</li>
+  </ul>
+</section>
+
+<div class="footer">The Leros Canvas 제작 가이드 v1.0 · 2026년 4월</div>
+</div>
+</body>
+</html>

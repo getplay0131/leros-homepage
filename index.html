@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Leros - 삶에 여유의 한 조각을</title>
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,600,700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --color-bg: #faf9f6;
+      --color-primary: #5e9e72;
+      --color-accent: #e07b6a;
+      --color-text: #28241e;
+      --color-muted: #78736a;
+      --color-border: #e6e2da;
+      
+      /* 조각 색상 - 더 선명하게 */
+      --piece-1: rgba(94, 158, 114, 0.7);  /* 메인 그린 */
+      --piece-2: rgba(224, 123, 106, 0.7); /* 악센트 코랄 */
+      --piece-3: rgba(120, 150, 200, 0.7); /* 차분한 블루 */
+      --piece-4: rgba(200, 180, 140, 0.7); /* 따뜻한 샌드 */
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: 'Satoshi', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--color-bg);
+      color: var(--color-text);
+      overflow-x: hidden;
+      /* 6개의 씬 × 150vh = 900vh 스크롤 길이 확보 */
+      height: 900vh; 
+      cursor: none;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* 커스텀 커서 */
+    .custom-cursor {
+      position: fixed; top: 0; left: 0;
+      width: 20px; height: 20px;
+      background: var(--color-primary);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 10000;
+      transform: translate(-50%, -50%);
+      transition: width 0.3s, height 0.3s, background 0.3s, opacity 0.3s;
+      mix-blend-mode: multiply;
+      will-change: transform;
+    }
+
+    .custom-cursor.hover {
+      width: 60px; height: 60px;
+      background: var(--color-accent);
+      opacity: 0.8;
+    }
+
+    /* 프로그레스 바 */
+    .progress-bar {
+      position: fixed; top: 0; left: 0;
+      width: 100%; height: 3px;
+      background: var(--color-primary);
+      transform-origin: left;
+      transform: scaleX(0);
+      z-index: 1000;
+      will-change: transform;
+    }
+
+    /* 우측 인디케이터 (진행률 기반) */
+    .indicator-container {
+      position: fixed; right: 30px; top: 50%;
+      transform: translateY(-50%);
+      display: flex; flex-direction: column; gap: 20px;
+      z-index: 100;
+    }
+
+    .indicator-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: var(--color-border);
+      position: relative;
+      transition: background 0.3s;
+    }
+    
+    .indicator-dot::after {
+      content: ''; position: absolute;
+      top: -4px; left: -4px; right: -4px; bottom: -4px;
+      border-radius: 50%;
+      border: 1px solid var(--color-primary);
+      opacity: 0;
+      transform: scale(0.5);
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .indicator-dot.active { background: var(--color-primary); }
+    .indicator-dot.active::after { opacity: 1; transform: scale(1); }
+
+    /* Sticky Container - 핵심 뷰포트 */
+    .sticky-container {
+      position: fixed; top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      overflow: hidden;
+      perspective: 1000px;
+    }
+
+    /* 각 씬(Scene) 컨테이너 */
+    .scene {
+      position: absolute; top: 0; left: 0;
+      width: 100%; height: 100%;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      opacity: 0; visibility: hidden;
+      transform: translateZ(-100px) scale(0.9);
+      will-change: transform, opacity, visibility, filter;
+      text-align: center;
+      padding: 0 20px;
+    }
+
+    /* 텍스트 타이포그래피 강화 */
+    .scene-0 h1 { 
+      font-size: 8vw; font-weight: 700; letter-spacing: -0.02em; 
+      background: linear-gradient(135deg, var(--color-text), var(--color-primary));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .scene-1 h2 { font-size: 5vw; font-weight: 600; line-height: 1.2; word-break: keep-all; }
+    
+    .scene-2 p { font-size: 2.2vw; line-height: 1.6; color: var(--color-text); font-weight: 500; word-break: keep-all; max-width: 800px; }
+    .scene-2 .highlight { color: var(--color-primary); font-weight: 700; }
+    
+    /* 프로젝트 및 문서 카드 개선 (Glassmorphism) */
+    .project-showcase, .doc-card {
+      display: flex; flex-direction: column; align-items: center;
+      background: rgba(255,255,255,0.7);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      padding: 50px; border-radius: 30px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.05);
+      border: 1px solid rgba(255,255,255,0.6);
+      transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease;
+      cursor: pointer;
+    }
+    
+    .project-showcase:hover, .doc-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 30px 60px rgba(0,0,0,0.1);
+      border: 1px solid rgba(255,255,255,0.9);
+    }
+    
+    /* 문서(Guide/Privacy) 씬 특화 레이아웃 */
+    .document-showcase {
+      display: flex; gap: 30px; justify-content: center; align-items: stretch;
+      width: 100%; max-width: 900px;
+    }
+    
+    .doc-card {
+      flex: 1; padding: 40px 30px;
+      text-decoration: none; color: var(--color-text);
+    }
+    
+    .doc-icon {
+      width: 80px; height: 80px;
+      background: linear-gradient(135deg, #e6f2ea, #fdf0e7);
+      border-radius: 20px; margin-bottom: 25px;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: inset 0 0 15px rgba(255,255,255,0.8);
+      font-size: 32px;
+    }
+    
+    .project-icon {
+      width: 120px; height: 120px;
+      background: linear-gradient(135deg, #ffd6e8, #c8e7ff, #d4f4dd);
+      border-radius: 30px; margin-bottom: 30px;
+      box-shadow: inset 0 0 20px rgba(255,255,255,0.5);
+    }
+    
+    .badge {
+      background: var(--color-accent); color: white;
+      padding: 6px 16px; border-radius: 30px;
+      font-size: 14px; font-weight: 600;
+      margin-top: 20px; letter-spacing: 0.05em;
+    }
+
+    /* Contact 향상 */
+    .contact-box h2 { font-size: 3vw; margin-bottom: 20px; }
+    .contact-link {
+      font-size: 2vw; font-weight: 600; color: var(--color-primary);
+      text-decoration: none; position: relative;
+      padding-bottom: 5px;
+    }
+    .contact-link::after {
+      content: ''; position: absolute;
+      bottom: 0; left: 0; width: 100%; height: 2px;
+      background: var(--color-primary);
+      transform: scaleX(0); transform-origin: right;
+      transition: transform 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+    }
+    .contact-link:hover::after { transform: scaleX(1); transform-origin: left; }
+
+    /* 조각(Pieces) 캔버스 */
+    .pieces-wrapper {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      pointer-events: none; z-index: -1;
+      will-change: transform, filter;
+    }
+    
+    .piece {
+      position: absolute; top: 50%; left: 50%;
+      width: 30vw; height: 30vw;
+      max-width: 400px; max-height: 400px;
+      border-radius: 50%;
+      filter: blur(60px);
+      mix-blend-mode: multiply;
+      will-change: transform, opacity, filter;
+      opacity: 0;
+    }
+
+    .p1 { background: var(--piece-1); }
+    .p2 { background: var(--piece-2); }
+    .p3 { background: var(--piece-3); }
+    .p4 { background: var(--piece-4); }
+
+    /* Underground Menu 유지 */
+    .underground-trigger {
+      position: fixed; bottom: 0; left: 0; right: 0; height: 5vh; z-index: 100;
+    }
+    .underground-menu {
+      position: fixed; bottom: -100%; left: 0; right: 0;
+      background: rgba(20, 18, 15, 0.95); backdrop-filter: blur(15px);
+      color: white; padding: 40px 20px 30px;
+      transition: bottom 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 99; text-align: center;
+    }
+    .underground-menu.visible { bottom: 0; }
+    .u-links a { color: rgba(255,255,255,0.6); text-decoration: none; transition: color 0.3s; }
+    .u-links a:hover { color: white; }
+
+    /* 반응형 텍스트 크기 보정 */
+    @media (max-width: 768px) {
+      .scene-0 h1 { font-size: 15vw; }
+      .scene-1 h2 { font-size: 9vw; }
+      .scene-2 p { font-size: 5vw; }
+      .contact-box h2 { font-size: 7vw; }
+      .contact-link { font-size: 5vw; }
+      .project-showcase { padding: 30px 20px; width: 90%; }
+      .document-showcase { flex-direction: column; gap: 20px; width: 90%; }
+      .doc-card { padding: 30px 20px; }
+      .piece { filter: blur(40px); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- UI Elements -->
+  <div class="custom-cursor"></div>
+  <div class="progress-bar"></div>
+  
+  <div class="indicator-container">
+    <div class="indicator-dot active" data-target="0"></div>
+    <div class="indicator-dot" data-target="1"></div>
+    <div class="indicator-dot" data-target="2"></div>
+    <div class="indicator-dot" data-target="3"></div>
+    <div class="indicator-dot" data-target="4"></div>
+    <div class="indicator-dot" data-target="5"></div>
+  </div>
+
+  <!-- Sticky Viewport -->
+  <div class="sticky-container">
+    
+    <!-- Background Pieces -->
+    <div class="pieces-wrapper">
+      <div class="piece p1"></div>
+      <div class="piece p2"></div>
+      <div class="piece p3"></div>
+      <div class="piece p4"></div>
+    </div>
+
+    <!-- Scenes -->
+    <div class="scene scene-0">
+      <h1>Leros</h1>
+    </div>
+
+    <div class="scene scene-1">
+      <h2>삶에 여유의<br>한 조각을</h2>
+    </div>
+
+    <div class="scene scene-2">
+      <p>
+        레로스(Leros)는 고대 그리스어 <span class="highlight">'여유'</span>와 <span class="highlight">'조각'</span>을 결합한 이름입니다.<br><br>
+        나와 가족, 임직원과 고객 모두의 삶에<br>
+        여유의 한 조각을 더해주는 가치를 만듭니다.
+      </p>
+    </div>
+
+    <div class="scene scene-3">
+      <div class="project-showcase interactive">
+        <div class="project-icon"></div>
+        <h3 style="font-size: 28px; margin-bottom: 10px;">무지개숲</h3>
+        <p style="color: var(--color-muted); margin-bottom: 20px;">6~10세 아이가 직접 만들고 플레이하는 창작 플랫폼</p>
+        <div class="badge">출시 예정</div>
+      </div>
+    </div>
+
+    <!-- 추가된 문서 보관소 씬 -->
+    <div class="scene scene-4">
+      <h2 style="font-size: 2.5vw; font-weight: 600; margin-bottom: 40px; color: var(--color-muted);">Archive</h2>
+      <div class="document-showcase">
+        <a href="guide.html" class="doc-card interactive">
+          <div class="doc-icon">📖</div>
+          <h3 style="font-size: 24px; margin-bottom: 10px;">레로스 가이드</h3>
+          <p style="font-size: 15px; color: var(--color-muted); line-height: 1.5;">브랜드 철학과 서비스<br>이용 방법을 안내합니다.</p>
+        </a>
+        <a href="privacy.html" class="doc-card interactive">
+          <div class="doc-icon">🔒</div>
+          <h3 style="font-size: 24px; margin-bottom: 10px;">개인정보처리방침</h3>
+          <p style="font-size: 15px; color: var(--color-muted); line-height: 1.5;">안전한 서비스 이용을 위한<br>데이터 보호 정책입니다.</p>
+        </a>
+      </div>
+    </div>
+
+    <div class="scene scene-5">
+      <div class="contact-box interactive">
+        <h2>CONTACT</h2>
+        <a href="mailto:contact@leros.kr" class="contact-link">contact@leros.kr</a>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Underground Menu -->
+  <div class="underground-trigger interactive"></div>
+  <div class="underground-menu">
+    <div style="font-size: 14px; margin-bottom: 15px;">© 2026 레로스 | 대표자: 윤승현</div>
+    <div class="u-links">
+      <a href="privacy.html" style="font-size: 13px;">개인정보처리방침</a>
+    </div>
+  </div>
+
+  <script>
+    // ===== 1. 핵심 상태 및 DOM 참조 =====
+    const scenes = document.querySelectorAll('.scene');
+    const dots = document.querySelectorAll('.indicator-dot');
+    const pieces = document.querySelectorAll('.piece');
+    const piecesWrapper = document.querySelector('.pieces-wrapper');
+    const progressBar = document.querySelector('.progress-bar');
+    const cursor = document.querySelector('.custom-cursor');
+    
+    // 전체 스크롤 길이는 (씬 개수 - 1) * 100vw/vh 기준이지만 CSS에서 body 높이로 잡음
+    const TOTAL_SCENES = scenes.length;
+    
+    // Lerp 상태
+    let currentProgress = 0;
+    let targetProgress = 0;
+    let mouseX = window.innerWidth / 2;
+    let mouseY = window.innerHeight / 2;
+    let cursorX = mouseX, cursorY = mouseY;
+
+    // ===== 2. 키프레임 애니메이션 엔진 (Apple Style) =====
+    // p: 0.0 ~ 1.0 (전체 진행률)
+    function render(p) {
+      // 1. 프로그레스 바
+      progressBar.style.transform = `scaleX(${p})`;
+
+      // 2. 인디케이터 활성화 (p 기준 구간 계산)
+      const activeIdx = Math.min(TOTAL_SCENES - 1, Math.floor(p * TOTAL_SCENES));
+      dots.forEach((dot, i) => dot.classList.toggle('active', i === activeIdx));
+
+      // 3. 씬(Scene) 트랜지션 처리 (가시성 및 겹침 완전 해결)
+      // 각 씬은 자신의 인덱스(i) / (TOTAL_SCENES - 1) 지점에서 p가 정확히 일치할 때 가장 선명함
+      scenes.forEach((scene, i) => {
+        // 해당 씬의 중심 p값 (0, 0.25, 0.5, 0.75, 1.0)
+        const centerP = i / (TOTAL_SCENES - 1);
+        
+        // p와의 거리 (0에 가까울수록 정중앙)
+        const dist = p - centerP;
+        
+        // 거리 기반 가중치 계산 (Apple 스크롤 공식: 종형 곡선)
+        // 거리가 ±0.15 이내일 때만 보이고, 0일때 opacity 1
+        const range = 0.15; // 이 값이 작을수록 빠르게 사라짐 -> 겹침 원천 차단
+        
+        if (Math.abs(dist) < range) {
+          // 화면에 보이는 구간
+          // 정규화된 진행도: -1 (다가옴) -> 0 (정중앙) -> 1 (멀어짐)
+          const normDist = dist / range; 
+          
+          // Cosine 기반 부드러운 투명도 곡선 (0일때 1, ±1일때 0)
+          const opacity = Math.cos(normDist * Math.PI / 2);
+          
+          // Z축 및 Scale 계산
+          // 다가올 때(음수): 아래에서 위로 올라오며 커짐
+          // 멀어질 때(양수): 화면 앞으로 튀어나오며 사라짐 (blur 추가)
+          let z = dist * -1000; // -150px ~ 150px
+          let scale = 1 + (dist * 0.5); // 0.925 ~ 1.075
+          let blur = dist > 0.05 ? (dist - 0.05) * 100 : 0; // 지나갈때만 블러
+          let y = dist * 200; // Y축 이동 (패럴랙스)
+
+          scene.style.visibility = 'visible';
+          scene.style.opacity = opacity;
+          scene.style.transform = `translate3d(0, ${y}px, ${z}px) scale(${scale})`;
+          scene.style.filter = `blur(${blur}px)`;
+        } else {
+          // 화면 밖 구간 -> 렌더링 최적화
+          scene.style.visibility = 'hidden';
+          scene.style.opacity = 0;
+        }
+      });
+
+      // 4. Gathering Pieces (조각 모임) 애니메이션
+      // p: 0.0 ~ 1.0 (전체 6개 씬, p 간격 0.2)
+      // 0.0 (씬0) : 화면 밖 무작위 위치에 흩어짐
+      // 0.2 (씬1): 서서히 화면 안으로 들어옴
+      // 0.4 (씬2 - 철학): 완벽한 원형으로 중앙에 모임 (여유 완성)
+      // 0.6 (씬3) ~ 1.0 : 배경에서 은은하게 빛나며 약간 회전
+      
+      const centerX = 0, centerY = 0;
+      
+      pieces.forEach((piece, i) => {
+        // 각 피스별 고유한 랜덤 궤적 (난수 시드 고정)
+        const seed = i * 13.5;
+        const radius = window.innerWidth * 0.4;
+        const startX = Math.cos(seed) * radius * 2;
+        const startY = Math.sin(seed) * radius * 2;
+        
+        let x, y, scale, opacity, blurLevel;
+
+        const gatherTargetP = 0.4; // 씬 2(철학) 도달 시점
+
+        if (p < gatherTargetP) {
+          // 0 -> 0.4 : 흩어짐 -> 모임
+          const gatherProgress = p / gatherTargetP; // 0.0 ~ 1.0
+          // easeOut (빠르게 오다가 천천히 정착)
+          const easeGather = 1 - Math.pow(1 - gatherProgress, 3);
+          
+          x = startX * (1 - easeGather);
+          y = startY * (1 - easeGather);
+          
+          // 원형 배치 (도달시)
+          const angle = (i / 4) * Math.PI * 2;
+          const targetRadius = window.innerWidth < 768 ? 40 : 100;
+          x += Math.cos(angle) * targetRadius * easeGather;
+          y += Math.sin(angle) * targetRadius * easeGather;
+          
+          scale = 0.5 + (easeGather * 0.5); // 0.5 -> 1.0
+          opacity = easeGather * 0.8; // 서서히 나타남
+          blurLevel = 60 - (easeGather * 20); // 60px -> 40px
+          
+        } else {
+          // 0.4 -> 1.0 : 모인 상태 유지하며 회전 및 은은한 펄스
+          const postProgress = (p - gatherTargetP) / (1 - gatherTargetP); // 0.0 ~ 1.0
+          
+          // 회전
+          const baseAngle = (i / 4) * Math.PI * 2;
+          const rotation = postProgress * Math.PI * 1.5; // 좀 더 많이 회전
+          
+          const targetRadius = window.innerWidth < 768 ? 40 : 100;
+          
+          // 약간 팽창 (씬3 프로젝트 부근)
+          const expand = Math.sin(postProgress * Math.PI) * 60; 
+          
+          x = Math.cos(baseAngle + rotation) * (targetRadius + expand);
+          y = Math.sin(baseAngle + rotation) * (targetRadius + expand);
+          
+          scale = 1.0 + Math.sin(postProgress * Math.PI * 2) * 0.1;
+          opacity = 0.8 - (postProgress * 0.4); // 서서히 더 희미해짐
+          blurLevel = 40 + (postProgress * 30); // 더 넓게 퍼짐
+        }
+
+        // 마우스 패럴랙스 (미세하게 커서 따라감)
+        const mouseOffsetDist = 0.05; // 5% 강도
+        const dx = (mouseX - window.innerWidth/2) * mouseOffsetDist * (i % 2 === 0 ? 1 : -1);
+        const dy = (mouseY - window.innerHeight/2) * mouseOffsetDist;
+
+        piece.style.opacity = opacity;
+        piece.style.transform = `translate3d(calc(-50% + ${x + dx}px), calc(-50% + ${y + dy}px), 0) scale(${scale})`;
+        piece.style.filter = `blur(${blurLevel}px)`;
+      });
+      
+      // 전체 배경 밝기 보정 (씬2 철학에서 가장 밝음)
+      const bgGlow = Math.max(0, 1 - Math.abs(p - 0.4) * 4);
+      piecesWrapper.style.transform = `scale(${1 + bgGlow * 0.1})`;
+    }
+
+    // ===== 3. 마우스 & 커서 추적 (Lerp) =====
+    document.addEventListener('mousemove', e => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+    });
+
+    function cursorLoop() {
+      // Lerp (선형 보간) - 부드러운 따라가기
+      cursorX += (mouseX - cursorX) * 0.15;
+      cursorY += (mouseY - cursorY) * 0.15;
+      cursor.style.transform = `translate3d(${cursorX}px, ${cursorY}px, 0)`;
+      requestAnimationFrame(cursorLoop);
+    }
+    requestAnimationFrame(cursorLoop);
+
+    // 인터랙티브 요소 호버 (동적 바인딩)
+    const setupInteractiveHover = () => {
+      document.querySelectorAll('.interactive').forEach(el => {
+        // 기존 리스너 중복 방지를 위해 제거 후 다시 등록 (필요 시)
+        el.removeEventListener('mouseenter', hoverEnter);
+        el.removeEventListener('mouseleave', hoverLeave);
+        el.addEventListener('mouseenter', hoverEnter);
+        el.addEventListener('mouseleave', hoverLeave);
+      });
+    };
+    
+    const hoverEnter = () => cursor.classList.add('hover');
+    const hoverLeave = () => cursor.classList.remove('hover');
+    
+    setupInteractiveHover();
+
+    // ===== 4. 스크롤 렌더 루프 (가상 스크롤 + Lerp) =====
+    function scrollLoop() {
+      // 실제 스크롤 비율 (0 ~ 1)
+      const maxScroll = document.body.scrollHeight - window.innerHeight;
+      const rawProgress = Math.max(0, Math.min(1, window.scrollY / maxScroll));
+      
+      // 목표값
+      targetProgress = rawProgress;
+      
+      // 보간 (0.08: 적당히 무겁고 부드러운 느낌)
+      const diff = targetProgress - currentProgress;
+      if (Math.abs(diff) > 0.0001) {
+        currentProgress += diff * 0.08;
+      } else {
+        currentProgress = targetProgress;
+      }
+      
+      // 렌더링
+      render(currentProgress);
+      
+      requestAnimationFrame(scrollLoop);
+    }
+    // 초기 호출
+    requestAnimationFrame(scrollLoop);
+
+    // ===== 5. Underground Menu =====
+    const menu = document.querySelector('.underground-menu');
+    const trigger = document.querySelector('.underground-trigger');
+    
+    let menuTimeout;
+    const showMenu = () => { menu.classList.add('visible'); };
+    const hideMenu = () => { menu.classList.remove('visible'); };
+
+    trigger.addEventListener('mouseenter', showMenu);
+    trigger.addEventListener('mouseleave', hideMenu);
+    menu.addEventListener('mouseenter', showMenu);
+    menu.addEventListener('mouseleave', hideMenu);
+    
+    // 터치 대응
+    trigger.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      menu.classList.contains('visible') ? hideMenu() : showMenu();
+    });
+
+    // 인디케이터 클릭 이동
+    dots.forEach((dot, i) => {
+      dot.addEventListener('click', () => {
+        const targetScroll = (i / (TOTAL_SCENES - 1)) * (document.body.scrollHeight - window.innerHeight);
+        window.scrollTo({ top: targetScroll, behavior: 'smooth' });
+      });
+    });
+
+  </script>
+</body>
+</html>
