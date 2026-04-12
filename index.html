@@ -28,8 +28,8 @@
       background: var(--color-bg);
       color: var(--color-text);
       overflow-x: hidden;
-      /* 6개의 씬 × 150vh = 900vh 스크롤 길이 확보 */
-      height: 900vh; 
+      /* 5개의 씬 × 150vh = 750vh 스크롤 길이 확보 */
+      height: 750vh; 
       cursor: none;
       -webkit-font-smoothing: antialiased;
     }
@@ -93,6 +93,36 @@
 
     .indicator-dot.active { background: var(--color-primary); }
     .indicator-dot.active::after { opacity: 1; transform: scale(1); }
+
+    /* 데스크탑: 인디케이터 툴팁 */
+    .indicator-dot {
+      position: relative;
+    }
+    
+    .indicator-dot::before {
+      content: attr(data-label);
+      position: absolute;
+      right: calc(100% + 15px);
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(40, 36, 30, 0.9);
+      color: white;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      white-space: nowrap;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      pointer-events: none;
+    }
+    
+    .indicator-dot:hover::before {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(-50%) translateX(-5px);
+    }
 
     /* Sticky Container - 핵심 뷰포트 */
     .sticky-container {
@@ -236,17 +266,203 @@
     .u-links a { color: rgba(255,255,255,0.6); text-decoration: none; transition: color 0.3s; }
     .u-links a:hover { color: white; }
 
+    /* 상단으로 가기 버튼 (Origin) 스타일 */
+    .leros-top-button {
+      position: fixed;
+      bottom: 40px;
+      right: 40px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      opacity: 0;
+      visibility: hidden;
+      cursor: pointer;
+      z-index: 9999;
+      transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+      transform: translateY(20px);
+    }
+    
+    .leros-top-button.visible {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+    
+    .leros-top-button .piece-indicator {
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+      background: var(--color-primary);
+      filter: blur(2px);
+      transition: all 0.3s ease;
+    }
+    
+    .leros-top-button:hover .piece-indicator {
+      filter: blur(0);
+      transform: scale(1.5);
+      background: var(--color-accent);
+    }
+    
+    .leros-top-button span {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--color-text);
+      opacity: 0;
+      transform: translateX(-10px);
+      transition: all 0.3s ease;
+    }
+    
+    .leros-top-button:hover span {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
     /* 반응형 텍스트 크기 보정 */
     @media (max-width: 768px) {
-      .scene-0 h1 { font-size: 15vw; }
-      .scene-1 h2 { font-size: 9vw; }
-      .scene-2 p { font-size: 5vw; }
-      .contact-box h2 { font-size: 7vw; }
-      .contact-link { font-size: 5vw; }
+      .scene-0 h1 { font-size: clamp(40px, 15vw, 80px); }
+      .scene-1 h2 { font-size: clamp(28px, 9vw, 60px); }
+      .scene-2 p { font-size: clamp(18px, 5vw, 28px); }
+      .contact-box h2 { font-size: clamp(32px, 7vw, 48px); }
+      .contact-link { font-size: clamp(20px, 5vw, 32px); }
       .project-showcase { padding: 30px 20px; width: 90%; }
-      .document-showcase { flex-direction: column; gap: 20px; width: 90%; }
-      .doc-card { padding: 30px 20px; }
-      .piece { filter: blur(40px); }
+      .piece { filter: blur(25px); }
+      
+      /* 모바일: 하단 가로형 내비게이션 바 */
+      .indicator-container {
+        top: auto;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        flex-direction: row;
+        background: rgba(255, 255, 255, 0.4);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        padding: 10px 20px;
+        border-radius: 30px;
+        gap: 15px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.6);
+      }
+      
+      .indicator-dot {
+        width: 12px;
+        height: 12px;
+      }
+      
+      .indicator-dot::before {
+        display: none; /* 모바일에서는 툴팁 숨김 */
+      }
+      
+      /* 모바일: 상단 버튼 위치 조정 */
+      .leros-top-button {
+        bottom: 80px; /* 하단 네비게이션 바와 겹치지 않도록 */
+        right: 20px;
+      }
+      
+      .leros-top-button span {
+        display: none; /* 모바일에서는 텍스트 숨김 */
+      }
+    }
+
+    /* 무지개숲 핵심 가치 모달 */
+    .value-modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 10000;
+    }
+    
+    .value-modal-overlay.visible {
+      opacity: 1;
+      visibility: visible;
+    }
+    
+    .value-modal-card {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 30px;
+      padding: 50px;
+      max-width: 600px;
+      width: 90%;
+      text-align: center;
+      transform: scale(0.9) translateY(20px);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.6);
+    }
+    
+    .value-modal-overlay.visible .value-modal-card {
+      transform: scale(1) translateY(0);
+    }
+    
+    .value-modal-icon {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, #e6f2ea, #fdf0e7);
+      border-radius: 20px;
+      margin: 0 auto 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+    }
+    
+    .value-modal-title {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 20px;
+      color: var(--color-text);
+    }
+    
+    .value-modal-description {
+      font-size: 16px;
+      line-height: 1.7;
+      color: var(--color-muted);
+      margin-bottom: 30px;
+    }
+    
+    .value-modal-close {
+      background: var(--color-primary);
+      color: white;
+      border: none;
+      padding: 12px 30px;
+      border-radius: 30px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .value-modal-close:hover {
+      background: var(--color-accent);
+      transform: translateY(-2px);
+    }
+    
+    @media (max-width: 768px) {
+      .value-modal-card {
+        padding: 30px 20px;
+        max-width: 90%;
+      }
+      
+      .value-modal-title {
+        font-size: 24px;
+      }
+      
+      .value-modal-description {
+        font-size: 15px;
+      }
     }
   </style>
 </head>
@@ -257,12 +473,17 @@
   <div class="progress-bar"></div>
   
   <div class="indicator-container">
-    <div class="indicator-dot active" data-target="0"></div>
-    <div class="indicator-dot" data-target="1"></div>
-    <div class="indicator-dot" data-target="2"></div>
-    <div class="indicator-dot" data-target="3"></div>
-    <div class="indicator-dot" data-target="4"></div>
-    <div class="indicator-dot" data-target="5"></div>
+    <div class="indicator-dot active" data-target="0" data-label="Home"></div>
+    <div class="indicator-dot" data-target="1" data-label="Philosophy"></div>
+    <div class="indicator-dot" data-target="2" data-label="Values"></div>
+    <div class="indicator-dot" data-target="3" data-label="RainbowSoop"></div>
+    <div class="indicator-dot" data-target="4" data-label="Contact"></div>
+  </div>
+
+  <!-- 상단으로 가기 버튼 (Origin) -->
+  <div class="leros-top-button" id="goTopBtn">
+    <div class="piece-indicator"></div>
+    <span>Origin</span>
   </div>
 
   <!-- Sticky Viewport -->
@@ -294,7 +515,7 @@
     </div>
 
     <div class="scene scene-3">
-      <div class="project-showcase interactive">
+      <div class="project-showcase interactive" id="rainbowsoop-card">
         <div class="project-icon"></div>
         <h3 style="font-size: 28px; margin-bottom: 10px;">무지개숲</h3>
         <p style="color: var(--color-muted); margin-bottom: 20px;">6~10세 아이가 직접 만들고 플레이하는 창작 플랫폼</p>
@@ -302,24 +523,7 @@
       </div>
     </div>
 
-    <!-- 추가된 문서 보관소 씬 -->
     <div class="scene scene-4">
-      <h2 style="font-size: 2.5vw; font-weight: 600; margin-bottom: 40px; color: var(--color-muted);">Archive</h2>
-      <div class="document-showcase">
-        <a href="guide.html" class="doc-card interactive">
-          <div class="doc-icon">📖</div>
-          <h3 style="font-size: 24px; margin-bottom: 10px;">레로스 가이드</h3>
-          <p style="font-size: 15px; color: var(--color-muted); line-height: 1.5;">브랜드 철학과 서비스<br>이용 방법을 안내합니다.</p>
-        </a>
-        <a href="privacy.html" class="doc-card interactive">
-          <div class="doc-icon">🔒</div>
-          <h3 style="font-size: 24px; margin-bottom: 10px;">개인정보처리방침</h3>
-          <p style="font-size: 15px; color: var(--color-muted); line-height: 1.5;">안전한 서비스 이용을 위한<br>데이터 보호 정책입니다.</p>
-        </a>
-      </div>
-    </div>
-
-    <div class="scene scene-5">
       <div class="contact-box interactive">
         <h2>CONTACT</h2>
         <a href="mailto:contact@leros.kr" class="contact-link">leros0131@leros.kr</a>
@@ -337,6 +541,20 @@
     </div>
   </div>
 
+  <!-- 무지개숲 핵심 가치 모달 -->
+  <div class="value-modal-overlay" id="valueModal">
+    <div class="value-modal-card">
+      <div class="value-modal-icon">🌈</div>
+      <h3 class="value-modal-title">무지개숲의 핵심 가치</h3>
+      <p class="value-modal-description">
+        아이들의 상상력이 현실이 되는 오로라 구름 위 마법 공방.<br>
+        스스로 놀이를 창작하며 자연스럽게 창의력이 자라나는<br>
+        성장의 여유를 선물합니다.
+      </p>
+      <button class="value-modal-close" onclick="closeValueModal()">닫기</button>
+    </div>
+  </div>
+
   <script>
     // ===== 1. 핵심 상태 및 DOM 참조 =====
     const scenes = document.querySelectorAll('.scene');
@@ -347,7 +565,7 @@
     const cursor = document.querySelector('.custom-cursor');
     
     // 전체 스크롤 길이는 (씬 개수 - 1) * 100vw/vh 기준이지만 CSS에서 body 높이로 잡음
-    const TOTAL_SCENES = scenes.length;
+    const TOTAL_SCENES = 5;
     
     // Lerp 상태
     let currentProgress = 0;
@@ -562,6 +780,80 @@
         const targetScroll = (i / (TOTAL_SCENES - 1)) * (document.body.scrollHeight - window.innerHeight);
         window.scrollTo({ top: targetScroll, behavior: 'smooth' });
       });
+    });
+
+    // ===== 6. 상단으로 가기 버튼 (Origin) =====
+    const goTopBtn = document.getElementById('goTopBtn');
+    let scrollTimeout;
+
+    function handleScroll() {
+      // 스크롤 진행률 계산 (0 ~ 1)
+      const maxScroll = document.body.scrollHeight - window.innerHeight;
+      const scrollProgress = Math.max(0, Math.min(1, window.scrollY / maxScroll));
+      
+      // 20% 이상 스크롤 시 버튼 표시
+      if (scrollProgress > 0.2) {
+        goTopBtn.classList.add('visible');
+      } else {
+        goTopBtn.classList.remove('visible');
+      }
+    }
+
+    // 스크롤 이벤트 리스너 (디바운싱)
+    window.addEventListener('scroll', () => {
+      if (scrollTimeout) {
+        clearTimeout(scrollTimeout);
+      }
+      scrollTimeout = setTimeout(handleScroll, 50);
+    });
+
+    // 상단 버튼 클릭 이벤트
+    goTopBtn.addEventListener('click', () => {
+      window.scrollTo({ 
+        top: 0, 
+        behavior: 'smooth' 
+      });
+    });
+
+    // 초기 상태 확인
+    handleScroll();
+
+    // ===== 7. 무지개숲 핵심 가치 모달 =====
+    const valueModal = document.getElementById('valueModal');
+    const rainbowsoopCard = document.getElementById('rainbowsoop-card');
+
+    // 모달 열기
+    function openValueModal() {
+      valueModal.classList.add('visible');
+      // 커서 호버 효과 제거 (모달이 열리면 커서가 보이지 않도록)
+      cursor.style.opacity = '0';
+    }
+
+    // 모달 닫기
+    function closeValueModal() {
+      valueModal.classList.remove('visible');
+      // 커서 다시 보이기
+      cursor.style.opacity = '1';
+    }
+
+    // 무지개숲 카드 클릭 이벤트
+    rainbowsoopCard.addEventListener('click', (e) => {
+      e.preventDefault();
+      openValueModal();
+    });
+
+    // 모달 오버레이 클릭 시 닫기
+    valueModal.addEventListener('click', (e) => {
+      if (e.target === valueModal) {
+        closeValueModal();
+      }
+    });
+
+    // ESC 키로 모달 닫기
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && valueModal.classList.contains('visible')) {
+        closeValueModal();
+      }
     });
 
   </script>
