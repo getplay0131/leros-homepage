@@ -28,10 +28,12 @@
       background: var(--color-bg);
       color: var(--color-text);
       overflow-x: hidden;
-      /* 5개의 씬 × 150vh = 750vh 스크롤 길이 확보 */
+      /* 5개의 씬 × 150vh = 750vh 스크롤 길이 확보 (모바일 동적 뷰포트 대응 dvh 사용) */
       height: 750vh; 
+      height: 750dvh; /* 브라우저 UI 변화에도 흔들리지 않음 */
       cursor: none;
       -webkit-font-smoothing: antialiased;
+      transition: background-color 0.8s ease; /* 앰비언트 배경 전환 */
     }
 
     /* 커스텀 커서 */
@@ -92,27 +94,42 @@
       position: relative;
     }
     
-    /* 기본 점 모양 */
+    /* 텍스트: 평소 너비 0으로 숨김 */
+    .indicator-dot::before {
+      content: attr(data-label);
+      display: inline-block;
+      max-width: 0;
+      opacity: 0;
+      overflow: hidden;
+      white-space: nowrap;
+      transform: translateX(10px);
+      transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--color-text);
+      margin-right: 8px;
+      letter-spacing: 1px;
+    }
+
+    /* 활성화 시 텍스트 스르륵 등장 */
+    .indicator-dot.active::before {
+      max-width: 150px;
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    /* 점은 항상 유지 */
     .indicator-dot::after {
       content: '';
       width: 8px; height: 8px;
       border-radius: 50%;
       background: var(--color-border);
-      transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: all 0.6s ease;
       display: block;
     }
 
-    /* 활성화 상태 (텍스트로 전환) */
     .indicator-dot.active::after {
-      content: attr(data-label);
-      width: auto; height: auto;
-      background: transparent;
-      color: var(--color-text);
-      font-size: 14px;
-      font-weight: 600;
-      letter-spacing: 1px;
-      transform: scale(1);
-      opacity: 1;
+      background: var(--color-primary);
     }
     
     /* 비활성화 상태 호버 시 (툴팁) */
@@ -590,7 +607,45 @@
       // 1. 프로그레스 바
       progressBar.style.transform = `scaleX(${p})`;
 
-      // 2. 인디케이터 활성화 (p 기준 구간 계산)
+      // 2. 앰비언트 배경 컬러 트랜지션
+      const sceneColors = [
+        '#faf9f6', // Scene 0: Home (웜화이트)
+        '#f5f3ee', // Scene 1: Philosophy (샌드 베이지)
+        '#f0f4f1', // Scene 2: Values (세이지 그린)
+        '#fef5f3', // Scene 3: RainbowSoop (코랄 핑크)
+        '#faf9f6'  // Scene 4: Contact (웜화이트)
+      ];
+      
+      const sceneIndex = p * (TOTAL_SCENES - 1);
+      const currentSceneIdx = Math.floor(sceneIndex);
+      const nextSceneIdx = Math.min(currentSceneIdx + 1, TOTAL_SCENES - 1);
+      const sceneProgress = sceneIndex - currentSceneIdx; // 0 ~ 1
+      
+      function hexToRgb(hex) {
+        const r = parseInt(hex.slice(1, 3), 16);
+        const g = parseInt(hex.slice(3, 5), 16);
+        const b = parseInt(hex.slice(5, 7), 16);
+        return { r, g, b };
+      }
+      
+      function lerpColor(color1, color2, t) {
+        const c1 = hexToRgb(color1);
+        const c2 = hexToRgb(color2);
+        const r = Math.round(c1.r + (c2.r - c1.r) * t);
+        const g = Math.round(c1.g + (c2.g - c1.g) * t);
+        const b = Math.round(c1.b + (c2.b - c1.b) * t);
+        return `rgb(${r}, ${g}, ${b})`;
+      }
+      
+      const bgColor = lerpColor(
+        sceneColors[currentSceneIdx], 
+        sceneColors[nextSceneIdx], 
+        sceneProgress
+      );
+      
+      document.body.style.backgroundColor = bgColor;
+
+      // 3. 인디케이터 활성화 (p 기준 구간 계산)
       const activeIdx = Math.min(TOTAL_SCENES - 1, Math.floor(p * TOTAL_SCENES));
       dots.forEach((dot, i) => dot.classList.toggle('active', i === activeIdx));
 
@@ -717,15 +772,75 @@
         const mouseOffsetDist = 0.05; // 5% 강도
         const dx = (mouseX - window.innerWidth/2) * mouseOffsetDist * (i % 2 === 0 ? 1 : -1);
         const dy = (mouseY - window.innerHeight/2) * mouseOffsetDist;
+        
+        // 조각 밀어내기 효과 적용
+        const repelX = parseFloat(piece.dataset.repelX || 0);
+        const repelY = parseFloat(piece.dataset.repelY || 0);
 
         piece.style.opacity = opacity;
-        piece.style.transform = `translate3d(calc(-50% + ${x + dx}px), calc(-50% + ${y + dy}px), 0) scale(${scale})`;
+        piece.style.transform = `translate3d(calc(-50% + ${x + dx + repelX}px), calc(-50% + ${y + dy + repelY}px), 0) scale(${scale})`;
         piece.style.filter = `blur(${blurLevel}px)`;
       });
       
       // 전체 배경 밝기 보정 (씬2 철학에서 가장 밝음)
       const bgGlow = Math.max(0, 1 - Math.abs(p - 0.4) * 4);
       piecesWrapper.style.transform = `scale(${1 + bgGlow * 0.1})`;
+    }
+
+    // ===== 마그네틱 & 조각 상호작용 =====
+    let magneticRafId = null;
+
+    function magneticLoop() {
+      // A. 마그네틱 호버
+      const magneticElements = document.querySelectorAll('.interactive, .project-showcase, .leros-top-button');
+      
+      magneticElements.forEach(el => {
+        const rect = el.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        
+        const distance = Math.hypot(mouseX - centerX, mouseY - centerY);
+        
+        if (distance < 80) {
+          const pullStrength = (80 - distance) / 80;
+          const pullX = (mouseX - centerX) * pullStrength * 0.15;
+          const pullY = (mouseY - centerY) * pullStrength * 0.15;
+          
+          el.style.transform = `translate(${pullX}px, ${pullY}px)`;
+        } else {
+          el.style.transform = 'translate(0, 0)';
+        }
+      });
+      
+      // B. 조각 밀어내기 (기존 조각 렌더링에 repel 오프셋 추가)
+      pieces.forEach((piece, i) => {
+        const rect = piece.getBoundingClientRect();
+        const pieceX = rect.left + rect.width / 2;
+        const pieceY = rect.top + rect.height / 2;
+        
+        const distance = Math.hypot(mouseX - pieceX, mouseY - pieceY);
+        
+        if (distance < 150) {
+          const repelStrength = (150 - distance) / 150;
+          const angle = Math.atan2(pieceY - mouseY, pieceX - mouseX);
+          const repelX = Math.cos(angle) * repelStrength * 40;
+          const repelY = Math.sin(angle) * repelStrength * 40;
+          
+          // dataset에 저장 (render 함수에서 사용)
+          piece.dataset.repelX = repelX;
+          piece.dataset.repelY = repelY;
+        } else {
+          piece.dataset.repelX = 0;
+          piece.dataset.repelY = 0;
+        }
+      });
+      
+      magneticRafId = requestAnimationFrame(magneticLoop);
+    }
+
+    // 데스크탑에서만 실행 (모바일은 마우스 없음)
+    if (window.innerWidth > 768 && !matchMedia('(pointer: coarse)').matches) {
+      requestAnimationFrame(magneticLoop);
     }
 
     // ===== 3. 마우스 & 커서 추적 (Lerp) =====
@@ -768,10 +883,15 @@
       // 목표값
       targetProgress = rawProgress;
       
-      // 보간 (0.08: 적당히 무겁고 부드러운 느낌)
+      // 모바일 기기 감지 (터치스크린 또는 좁은 화면)
+      const isMobile = window.innerWidth <= 768 || matchMedia('(pointer: coarse)').matches;
+      
+      // Lerp 계수 분기 (모바일은 0.15로 빠르게 반응, 데스크탑은 0.08로 무겁게)
+      const lerpFactor = isMobile ? 0.15 : 0.08;
       const diff = targetProgress - currentProgress;
+      
       if (Math.abs(diff) > 0.0001) {
-        currentProgress += diff * 0.08;
+        currentProgress += diff * lerpFactor;
       } else {
         currentProgress = targetProgress;
       }
@@ -847,7 +967,39 @@
     // 초기 상태 확인
     handleScroll();
 
-    // ===== 7. 무지개숲 핵심 가치 모달 =====
+    // ===== 8. 페이지 진입 인트로 =====
+    window.addEventListener('load', () => {
+      // prefers-reduced-motion 체크
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        return; // 모션 선호도 감소 시 인트로 건너뛰기
+      }
+      
+      const intro = document.createElement('div');
+      intro.className = 'intro-overlay';
+      intro.style.cssText = `
+        position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+        background: var(--color-bg); z-index: 99999;
+        display: flex; align-items: center; justify-content: center;
+        opacity: 1; transition: opacity 1s ease;
+      `;
+      
+      const lerosText = document.querySelector('.scene-0 h1').cloneNode(true);
+      lerosText.style.cssText = 'transform: scale(0.8); opacity: 0; transition: all 1.5s cubic-bezier(0.16, 1, 0.3, 1);';
+      intro.appendChild(lerosText);
+      document.body.appendChild(intro);
+      
+      setTimeout(() => {
+        lerosText.style.transform = 'scale(1)';
+        lerosText.style.opacity = '1';
+      }, 300);
+      
+      setTimeout(() => {
+        intro.style.opacity = '0';
+        setTimeout(() => intro.remove(), 1000);
+      }, 2000);
+    });
+
+    // ===== 9. 무지개숲 핵심 가치 모달 =====
     const valueModal = document.getElementById('valueModal');
     const rainbowsoopCard = document.getElementById('rainbowsoop-card');
 
