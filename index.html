@@ -1004,8 +1004,8 @@
           targetSnap = SNAP_POINTS.find(point => point > currentProgress) || SNAP_POINTS[SNAP_POINTS.length - 1];
         } else {
           // 위로 스크롤
-          targetSnap = SNAP_POINTS.reverse().find(point => point < currentProgress) || SNAP_POINTS[0];
-          SNAP_POINTS.reverse(); // 원상 복구
+          const reversedPoints = [...SNAP_POINTS].reverse();
+          targetSnap = reversedPoints.find(point => point < currentProgress) || SNAP_POINTS[0];
         }
         
         // 타겟 스냅으로 설정
@@ -1054,12 +1054,13 @@
         
         let targetSnap;
         if (touchDistance > 0) {
-          // 아래로 스�크롤
+          // 아래로 스크롤
           targetSnap = SNAP_POINTS.find(point => point > currentProgress) || SNAP_POINTS[SNAP_POINTS.length - 1];
         } else {
           // 위로 스크롤
-          targetSnap = SNAP_POINTS.reverse().find(point => point < currentProgress) || SNAP_POINTS[0];
-          SNAP_POINTS.reverse();
+          const reversedPoints = [...SNAP_POINTS];
+          reversedPoints.reverse();
+          targetSnap = reversedPoints.find(point => point < currentProgress) || SNAP_POINTS[0];
         }
         
         targetProgress = targetSnap;
