@@ -935,10 +935,11 @@
     let isSnapping = false; // 스냅 진행 중 플래그
     const SNAP_POINTS = [0.0, 0.25, 0.5, 0.75, 1.0]; // 5개 씬의 스냅 포인트
     const SNAP_THRESHOLD = 0.05; // 스냅 허용 오차
+    let maxScroll = 0; // 전체 스크롤 길이 저장 변수
     
     function scrollLoop() {
       // 실제 스크롤 비율 (0 ~ 1)
-      const maxScroll = document.body.scrollHeight - window.innerHeight;
+      maxScroll = document.body.scrollHeight - window.innerHeight;
       const rawProgress = Math.max(0, Math.min(1, window.scrollY / maxScroll));
       
       // 목표값 (스냅이 진행 중이 아닐 때만 업데이트)
