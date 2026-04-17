@@ -432,10 +432,21 @@
       cursor: pointer;
       transition: all 0.3s ease;
     }
+    
+    .btn-delete:disabled {
+      background: var(--color-border);
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
 
-    .btn-delete:hover {
+    .btn-delete:hover:not(:disabled) {
       background: #f08070;
       transform: translateY(-2px);
+    }
+    
+    .btn-delete.sending {
+      background: var(--color-muted);
+      cursor: wait;
     }
 
     /* 모바일 반응형 */
@@ -621,14 +632,14 @@
 
             <div class="form-group">
               <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-                <input type="checkbox" id="confirm" name="confirm" required style="width: auto;">
+                <input type="checkbox" id="confirm" name="confirm" style="width: auto;" onchange="toggleDeleteButton()">
                 <span>위 내용을 모두 이해했으며, 계정 삭제 후 복구할 수 없다는 점을 확인합니다.</span>
               </label>
             </div>
 
             <div class="form-actions">
               <button type="button" class="btn-cancel" onclick="hideDeleteModal()">취소</button>
-              <button type="submit" class="btn-delete">계정 삭제 요청</button>
+              <button type="submit" class="btn-delete" id="deleteButton" disabled>계정 삭제 요청</button>
             </div>
           </form>
         </div>
@@ -640,6 +651,13 @@
     // 출시 준비중 알림
     function showComingSoonAlert() {
       alert('무지개숲은 현재 출시 준비 중입니다.\n곧 만나요! 🌈');
+    }
+    
+    // 약관 동의 체크박스 토글
+    function toggleDeleteButton() {
+      const confirmCheckbox = document.getElementById('confirm');
+      const deleteButton = document.getElementById('deleteButton');
+      deleteButton.disabled = !confirmCheckbox.checked;
     }
     
     // 모달 관리
@@ -655,6 +673,8 @@
       deleteModal.classList.remove('visible');
       document.body.style.overflow = '';
       deleteForm.reset();
+      // 버튼 다시 비활성화
+      document.getElementById('deleteButton').disabled = true;
     }
 
     // 모달 외부 클릭 시 닫기
@@ -678,6 +698,7 @@
       const formData = new FormData(deleteForm);
       const email = formData.get('email');
       const reason = formData.get('reason');
+      const deleteButton = document.getElementById('deleteButton');
       
       // 이메일 형식 검증
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -691,6 +712,11 @@
         alert('계정 삭제 관련 안내를 확인해주세요.');
         return;
       }
+      
+      // 버튼 비활성화 및 전송 중 표시
+      deleteButton.disabled = true;
+      deleteButton.classList.add('sending');
+      deleteButton.textContent = '전송 중...';
 
       // 조각 흩어지는 애니메이션 효과
       const pieces = document.querySelectorAll('.piece');
@@ -729,11 +755,18 @@
               }, index * 200);
             });
             
+            // 모달 닫고 홈페이지의 홈 섹션으로 이동
             hideDeleteModal();
+            window.location.href = 'index.html#home';
           }, 2000);
         }, function(error) {
           console.error('이메일 발송 실패:', error);
           alert('요청 전송에 실패했습니다.\n잠시 후 다시 시도해주세요.');
+          
+          // 버튼 복원
+          deleteButton.disabled = false;
+          deleteButton.classList.remove('sending');
+          deleteButton.textContent = '계정 삭제 요청';
           
           // 실패 시 조각 복원
           pieces.forEach((piece, index) => {
