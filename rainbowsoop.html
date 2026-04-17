@@ -10,7 +10,7 @@
   <script type="text/javascript">
     (function(){
       emailjs.init({
-        publicKey: Zg5k3r08iPtZH-x_F, // EmailJS 가입 후 여기에 Public Key 입력
+        publicKey: "Zg5k3r08iPtZH-x_F",
       });
     })();
   </script>
@@ -712,7 +712,7 @@
       };
       
       // EmailJS로 이메일 발송
-      emailjs.send(service_9f3hwbu, template_026qxkt, emailParams)
+      emailjs.send('service_9f3hwbu', 'template_026qxkt', emailParams)
         .then(function(response) {
           console.log('이메일 발송 성공:', response.status, response.text);
           
