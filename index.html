@@ -192,6 +192,51 @@
       border: 1px solid rgba(255,255,255,0.9);
     }
     
+    /* Projects 그리드 레이아웃 */
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 30px;
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    
+    .project-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: rgba(255,255,255,0.7);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      padding: 40px;
+      border-radius: 30px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.05);
+      border: 1px solid rgba(255,255,255,0.6);
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      cursor: pointer;
+      text-decoration: none;
+      color: var(--color-text);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .project-card:hover {
+      transform: translateY(-10px) scale(1.02);
+      box-shadow: 0 30px 60px rgba(0,0,0,0.1);
+      border: 1px solid rgba(255,255,255,0.9);
+    }
+    
+    .project-card.placeholder {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    
+    .project-card.placeholder:hover {
+      transform: none;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.05);
+    }
+    
     /* 문서(Guide/Privacy) 씬 특화 레이아웃 */
     .document-showcase {
       display: flex; gap: 30px; justify-content: center; align-items: stretch;
@@ -503,7 +548,7 @@
     <div class="indicator-dot active" data-target="0" data-label="Home"></div>
     <div class="indicator-dot" data-target="1" data-label="Philosophy"></div>
     <div class="indicator-dot" data-target="2" data-label="Values"></div>
-    <div class="indicator-dot" data-target="3" data-label="RainbowSoop"></div>
+    <div class="indicator-dot" data-target="3" data-label="Projects"></div>
     <div class="indicator-dot" data-target="4" data-label="Contact"></div>
   </div>
 
@@ -542,11 +587,21 @@
     </div>
 
     <div class="scene scene-3">
-      <div class="project-showcase interactive" id="rainbowsoop-card">
-        <div class="project-icon"></div>
-        <h3 style="font-size: 28px; margin-bottom: 10px;">무지개숲</h3>
-        <p style="color: var(--color-muted); margin-bottom: 20px;">6~10세 아이가 직접 만들고 플레이하는 창작 플랫폼</p>
-        <div class="badge">출시 예정</div>
+      <h2 style="font-size: 4vw; margin-bottom: 40px; font-weight: 600;">Projects</h2>
+      <div class="projects-grid">
+        <div class="project-card interactive" id="rainbowsoop-card">
+          <div class="project-icon"></div>
+          <h3 style="font-size: 28px; margin-bottom: 10px;">무지개숲</h3>
+          <p style="color: var(--color-muted); margin-bottom: 20px;">6~10세 아이가 직접 만들고 플레이하는 창작 플랫폼</p>
+          <div class="badge">출시 예정</div>
+        </div>
+        <!-- 향후 다른 프로젝트를 위한 자리 (확장성 확보) -->
+        <div class="project-card placeholder">
+          <div class="project-icon"></div>
+          <h3 style="font-size: 28px; margin-bottom: 10px;">Coming Soon</h3>
+          <p style="color: var(--color-muted); margin-bottom: 20px;">새로운 가치를 만드는 중입니다</p>
+          <div class="badge">준비중</div>
+        </div>
       </div>
     </div>
 
@@ -875,13 +930,21 @@
     setupInteractiveHover();
 
     // ===== 4. 스크롤 렌더 루프 (가상 스크롤 + Lerp) =====
+    // 스크롤 스냅 관련 상태
+    let wheelDebounceTimer = null;
+    let isSnapping = false; // 스냅 진행 중 플래그
+    const SNAP_POINTS = [0.0, 0.25, 0.5, 0.75, 1.0]; // 5개 씬의 스냅 포인트
+    const SNAP_THRESHOLD = 0.05; // 스냅 허용 오차
+    
     function scrollLoop() {
       // 실제 스크롤 비율 (0 ~ 1)
       const maxScroll = document.body.scrollHeight - window.innerHeight;
       const rawProgress = Math.max(0, Math.min(1, window.scrollY / maxScroll));
       
-      // 목표값
-      targetProgress = rawProgress;
+      // 목표값 (스냅이 진행 중이 아닐 때만 업데이트)
+      if (!isSnapping) {
+        targetProgress = rawProgress;
+      }
       
       // 모바일 기기 감지 (터치스크린 또는 좁은 화면)
       const isMobile = window.innerWidth <= 768 || matchMedia('(pointer: coarse)').matches;
@@ -903,6 +966,110 @@
     }
     // 초기 호출
     requestAnimationFrame(scrollLoop);
+    
+    // ===== 4.1. 마그네틱 스크롤 스냅 =====
+    function findClosestSnapPoint(progress) {
+      return SNAP_POINTS.reduce((prev, curr) => {
+        return Math.abs(curr - progress) < Math.abs(prev - progress) ? curr : prev;
+      });
+    }
+    
+    // 휠 이벤트 핸들러 (데스크탑)
+    window.addEventListener('wheel', (e) => {
+      // 이미 스냅 중이면 무시
+      if (isSnapping) {
+        e.preventDefault();
+        return;
+      }
+      
+      // 기존 디바운스 타이머 클리어
+      clearTimeout(wheelDebounceTimer);
+      
+      // 새로운 디바운스 타이머 설정
+      wheelDebounceTimer = setTimeout(() => {
+        // 현재 진행률에서 가장 가까운 스냅 포인트 찾기
+        const closestSnap = findClosestSnapPoint(currentProgress);
+        
+        // 현재 위치가 이미 스냅 포인트 근처이면 스냅하지 않음
+        const distanceToSnap = Math.abs(currentProgress - closestSnap);
+        if (distanceToSnap < SNAP_THRESHOLD) {
+          return;
+        }
+        
+        // 스크롤 방향에 따라 다음/이전 스냅 포인트 결정
+        let targetSnap;
+        if (e.deltaY > 0) {
+          // 아래로 스크롤
+          targetSnap = SNAP_POINTS.find(point => point > currentProgress) || SNAP_POINTS[SNAP_POINTS.length - 1];
+        } else {
+          // 위로 스크롤
+          targetSnap = SNAP_POINTS.reverse().find(point => point < currentProgress) || SNAP_POINTS[0];
+          SNAP_POINTS.reverse(); // 원상 복구
+        }
+        
+        // 타겟 스냅으로 설정
+        targetProgress = targetSnap;
+        isSnapping = true;
+        
+        // 실제 스크롤 위치도 동기화
+        const targetScroll = targetSnap * maxScroll;
+        window.scrollTo({ top: targetScroll, behavior: 'instant' });
+        
+        // 스냅 완료 후 플래그 해제
+        setTimeout(() => { isSnapping = false; }, 800);
+      }, 150); // 150ms 디바운싱
+    }, { passive: false }); // preventDefault를 위해 passive: false
+    
+    // �치 이벤트 핸들러 (모바일)
+    let touchStartY = 0;
+    let touchStartTime = 0;
+    
+    window.addEventListener('touchstart', (e) => {
+      touchStartY = e.touches[0].clientY;
+      touchStartTime = Date.now();
+    }, { passive: true });
+    
+    window.addEventListener('touchend', (e) => {
+      if (isSnapping) return;
+      
+      const touchEndY = e.changedTouches[0].clientY;
+      const touchDuration = Date.now() - touchStartTime;
+      const touchDistance = touchStartY - touchEndY;
+      
+      // 터치가 너무 짧거나 거리가 너무 작으면 무시
+      if (touchDuration < 100 || Math.abs(touchDistance) < 30) {
+        return;
+      }
+      
+      // 터치 방향에 따라 스냅
+      clearTimeout(wheelDebounceTimer);
+      wheelDebounceTimer = setTimeout(() => {
+        const closestSnap = findClosestSnapPoint(currentProgress);
+        const distanceToSnap = Math.abs(currentProgress - closestSnap);
+        
+        if (distanceToSnap < SNAP_THRESHOLD) {
+          return;
+        }
+        
+        let targetSnap;
+        if (touchDistance > 0) {
+          // 아래로 스�크롤
+          targetSnap = SNAP_POINTS.find(point => point > currentProgress) || SNAP_POINTS[SNAP_POINTS.length - 1];
+        } else {
+          // 위로 스크롤
+          targetSnap = SNAP_POINTS.reverse().find(point => point < currentProgress) || SNAP_POINTS[0];
+          SNAP_POINTS.reverse();
+        }
+        
+        targetProgress = targetSnap;
+        isSnapping = true;
+        
+        const targetScroll = targetSnap * maxScroll;
+        window.scrollTo({ top: targetScroll, behavior: 'instant' });
+        
+        setTimeout(() => { isSnapping = false; }, 800);
+      }, 150);
+    }, { passive: true });
 
     // ===== 5. Underground Menu =====
     const menu = document.querySelector('.underground-menu');
@@ -1020,7 +1187,8 @@
     // 무지개숲 카드 클릭 이벤트
     rainbowsoopCard.addEventListener('click', (e) => {
       e.preventDefault();
-      openValueModal();
+      // 무지개숲 전용 페이지로 이동
+      window.location.href = 'rainbowsoop.html';
     });
 
     // 모달 오버레이 클릭 시 닫기
