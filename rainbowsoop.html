@@ -5,6 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>무지개숲 - 6~10세 아이가 만드는 창작 플랫폼</title>
   <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,600,700&display=swap" rel="stylesheet">
+  <!-- EmailJS SDK -->
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script type="text/javascript">
+    (function(){
+      emailjs.init({
+        publicKey: Zg5k3r08iPtZH-x_F, // EmailJS 가입 후 여기에 Public Key 입력
+      });
+    })();
+  </script>
   <style>
     :root {
       /* 무지개숲 전용 컬러 팔레트 - 따뜻하고 감성적인 톤 */
@@ -514,7 +523,7 @@
       <div class="section-content">
         <p style="margin-bottom: 20px;">
           무지개숲은 아이들이 직접 게임을 만들고 친구들과 공유하는 창작 플랫폼입니다. 
-          코딩 지식 없이도 직관적인 블록 조립으로 나만의 게임을 만들 수 있어요.
+          직관적인 블록 조립으로 나만의 게임을 만들 수 있어요.
         </p>
         <p style="margin-bottom: 20px;">
           <strong>주요 기능:</strong>
@@ -533,7 +542,7 @@
       <h2 class="section-title">다운로드</h2>
       <div class="section-content">
         <p>무지개숲을 지금 바로 다운로드하고 창작의 즐거움을 경험해보세요!</p>
-        <a href="#" class="download-button">
+        <a href="javascript:void(0)" class="download-button" onclick="showComingSoonAlert()">
           <span>📱</span>
           <span>Google Play에서 다운로드</span>
         </a>
@@ -628,6 +637,11 @@
   </div>
 
   <script>
+    // 출시 준비중 알림
+    function showComingSoonAlert() {
+      alert('무지개숲은 현재 출시 준비 중입니다.\n곧 만나요! 🌈');
+    }
+    
     // 모달 관리
     const deleteModal = document.getElementById('deleteModal');
     const deleteForm = document.getElementById('deleteForm');
@@ -688,31 +702,59 @@
         }, index * 200);
       });
 
-      // 실제 서버 구현 시 여기서 API 호출
-      console.log('계정 삭제 요청:', { email, reason });
+      // 계정 삭제 요청을 EmailJS로 발송
+      const emailParams = {
+        to_email: 'leros0131@leros.kr',
+        from_email: email,
+        user_email: email,
+        reason: reason || '사유 미입력',
+        message: `계정 삭제 요청\n\n이메일: ${email}\n사유: ${reason || '(미입력)'}\n\n본 요청을 영업일 기준 7~30일 이내 처리 부탁드립니다.`
+      };
       
-      // 성공 메시지 표시 (애니메이션 후)
-      setTimeout(() => {
-        alert('계정 삭제 요청이 접수되었습니다.\n영업일 기준 7~30일 이내 처리됩니다.');
-        
-        // 조각 복원
-        pieces.forEach((piece, index) => {
+      // EmailJS로 이메일 발송
+      emailjs.send(service_9f3hwbu, template_026qxkt, emailParams)
+        .then(function(response) {
+          console.log('이메일 발송 성공:', response.status, response.text);
+          
+          // 성공 메시지 표시 (애니메이션 후)
           setTimeout(() => {
-            piece.style.transition = 'all 1.5s cubic-bezier(0.16, 1, 0.3, 1)';
-            piece.style.transform = '';
-            piece.style.opacity = '';
-          }, index * 200);
+            alert('계정 삭제 요청이 정상적으로 접수되었습니다.\n영업일 기준 7~30일 이내 처리됩니다.');
+            
+            // 조각 복원
+            pieces.forEach((piece, index) => {
+              setTimeout(() => {
+                piece.style.transition = 'all 1.5s cubic-bezier(0.16, 1, 0.3, 1)';
+                piece.style.transform = '';
+                piece.style.opacity = '';
+              }, index * 200);
+            });
+            
+            hideDeleteModal();
+          }, 2000);
+        }, function(error) {
+          console.error('이메일 발송 실패:', error);
+          alert('요청 전송에 실패했습니다.\n잠시 후 다시 시도해주세요.');
+          
+          // 실패 시 조각 복원
+          pieces.forEach((piece, index) => {
+            setTimeout(() => {
+              piece.style.transition = 'all 1.5s cubic-bezier(0.16, 1, 0.3, 1)';
+              piece.style.transform = '';
+              piece.style.opacity = '';
+            }, index * 200);
+          });
         });
-        
-        hideDeleteModal();
-      }, 2000);
     });
 
-    // 부드러운 스크롤
+    // 부드러운 스크롤 (href가 #로 시작하고 유효한 선택자인 경우만)
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
       anchor.addEventListener('click', function (e) {
+        const href = this.getAttribute('href');
+        // href가 단순 '#'이거나 유효하지 않은 선택자면 스킵
+        if (href === '#' || href.length <= 1) return;
+        
         e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
+        const target = document.querySelector(href);
         if (target) {
           target.scrollIntoView({
             behavior: 'smooth',
