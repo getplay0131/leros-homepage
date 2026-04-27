@@ -1,381 +1,558 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>개인정보처리방침 - 무지개숲</title>
-  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,600,700&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --color-bg: #faf9f6;
-      --color-primary: #5e9e72;
-      --color-accent: #e07b6a;
-      --color-text: #28241e;
-      --color-muted: #78736a;
-      --color-border: #e6e2da;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>개인정보처리방침 - 무지개숲</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Satoshi:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #FF6B6B;
+            --secondary-color: #4ECDC4;
+            --accent-color: #45B7D1;
+            --text-primary: #2C3E50;
+            --text-secondary: #546E7A;
+            --bg-glass: rgba(255, 255, 255, 0.25);
+            --border-glass: rgba(255, 255, 255, 0.18);
+        }
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    body {
-      font-family: 'Satoshi', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: var(--color-bg);
-      color: var(--color-text);
-      line-height: 1.8;
-      padding: 40px 20px;
-    }
+        body {
+            font-family: 'Satoshi', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #feca57 75%, #48c9b0 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            min-height: 100vh;
+            padding: 20px;
+        }
 
-    .container {
-      max-width: 900px;
-      margin: 0 auto;
-      background: white;
-      border-radius: 16px;
-      padding: 60px;
-      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
-    }
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
 
-    h1 {
-      font-size: 36px;
-      font-weight: 700;
-      margin-bottom: 16px;
-      text-align: center;
-      color: var(--color-primary);
-    }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px;
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid var(--border-glass);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        }
 
-    .version-info {
-      text-align: center;
-      color: var(--color-muted);
-      font-size: 14px;
-      margin-bottom: 40px;
-      padding-bottom: 24px;
-      border-bottom: 2px solid var(--color-border);
-    }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
 
-    .intro {
-      background: #f8faf5;
-      padding: 24px;
-      border-radius: 12px;
-      margin-bottom: 40px;
-      border-left: 4px solid var(--color-primary);
-    }
+        h1 {
+            font-size: 2.5em;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+        }
 
-    h2 {
-      font-size: 24px;
-      font-weight: 700;
-      margin: 48px 0 20px 0;
-      color: var(--color-text);
-      padding-bottom: 12px;
-      border-bottom: 2px solid var(--color-border);
-    }
+        .subtitle {
+            font-size: 1.2em;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
 
-    h3 {
-      font-size: 18px;
-      font-weight: 600;
-      margin: 32px 0 16px 0;
-      color: var(--color-primary);
-    }
+        h2 {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin: 40px 0 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border-glass);
+        }
 
-    p, li {
-      font-size: 15px;
-      margin-bottom: 12px;
-    }
+        h3 {
+            font-size: 1.4em;
+            font-weight: 600;
+            color: var(--accent-color);
+            margin: 30px 0 15px;
+        }
 
-    ul, ol {
-      margin-left: 24px;
-      margin-bottom: 20px;
-    }
+        p {
+            margin-bottom: 15px;
+            font-size: 1em;
+            line-height: 1.8;
+        }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 24px 0;
-      font-size: 14px;
-    }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
 
-    th, td {
-      border: 1px solid var(--color-border);
-      padding: 12px;
-      text-align: left;
-    }
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-glass);
+        }
 
-    th {
-      background: var(--color-bg);
-      font-weight: 600;
-    }
+        th {
+            background: rgba(255, 107, 107, 0.2);
+            font-weight: 600;
+            color: var(--text-primary);
+        }
 
-    .highlight {
-      background: #fff9e6;
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-weight: 500;
-    }
+        ul, ol {
+            margin: 20px 0;
+            padding-left: 30px;
+        }
 
-    .back-link {
-      display: inline-block;
-      margin-top: 48px;
-      padding: 12px 24px;
-      background: var(--color-primary);
-      color: white;
-      text-decoration: none;
-      border-radius: 8px;
-      font-weight: 600;
-      transition: all 0.3s ease;
-    }
+        li {
+            margin-bottom: 10px;
+            line-height: 1.8;
+        }
 
-    .back-link:hover {
-      background: #4d8660;
-      transform: translateY(-2px);
-    }
+        strong {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
 
-    @media (max-width: 768px) {
-      .container {
-        padding: 32px 24px;
-      }
-      
-      h1 {
-        font-size: 28px;
-      }
+        hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--border-glass), transparent);
+            margin: 40px 0;
+        }
 
-      h2 {
-        font-size: 20px;
-      }
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+                margin: 10px;
+            }
 
-      table {
-        font-size: 12px;
-      }
+            h1 {
+                font-size: 2em;
+            }
 
-      th, td {
-        padding: 8px;
-      }
-    }
-  </style>
+            h2 {
+                font-size: 1.5em;
+            }
+
+            h3 {
+                font-size: 1.3em;
+            }
+
+            table {
+                font-size: 0.9em;
+            }
+
+            th, td {
+                padding: 8px 10px;
+            }
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <h1>개인정보 처리방침</h1>
-    
-    <div class="version-info">
-      무지개숲 | 버전 v1.3 | 시행일: 2026년 5월 1일
-    </div>
+    <div class="container">
+        <div class="header">
+            <h1>개인정보처리방침</h1>
+            <div class="subtitle">무지개숲 개인정보처리방침 v2.1</div>
+        </div>
 
-    <div class="intro">
-      <p>
-        <strong>레로스</strong>(이하 "회사")는 회사의 "무지개숲" 서비스와 관련하여 정보통신망 이용촉진 및 정보보호 등에 관한 법률, 개인정보보호법 등 관련 법령에 따라 이용자의 개인정보를 처리·보호하고, 이와 관련한 고충을 신속하고 원활하게 처리할 수 있도록 하기 위하여 다음과 같이 개인정보처리방침을 수립합니다.
-      </p>
-      <p style="margin-top: 12px;">
-        개인정보처리방침은 이용자가 언제나 쉽게 열람할 수 있도록 서비스 초기화면을 통해 공개하고 있으며 관련법령, 지침, 고시 또는 서비스 정책의 변경에 따라 달라질 수 있습니다.
-      </p>
-    </div>
+        <p>[회사명 기재](이하 "<strong>회사</strong>")는 회사의 "<strong>무지개숲</strong>" 서비스와 관련하여 정보통신망 이용촉진 및 정보보호 등에 관한 법률, 개인정보보호법 등 관련 법령에 따라 이용자의 개인정보를 처리·보호하고, 이와 관련한 고충을 신속하고 원활하게 처리할 수 있도록 하기 위하여 다음과 같이 개인정보처리방침을 수립합니다.</p>
 
-    <h2>1. 개인정보의 처리목적, 처리 항목, 보유 및 이용 기간</h2>
-    
-    <p>회사는 다음과 같이 이용자의 개인정보를 수집합니다. 처리하고 있는 개인정보는 다음의 수집·이용 목적 이외의 용도로는 활용되지 않으며, 수집·이용 목적이 변경되는 경우에는 개인정보보호법에 따라 별도의 동의를 받는 등 필요한 조치를 이행합니다.</p>
+        <p>개인정보처리방침은 이용자가 언제나 쉽게 열람할 수 있도록 서비스 초기화면을 통해 공개하고 있으며 관련법령, 지침, 고시 또는 서비스 정책의 변경에 따라 달라질 수 있습니다.</p>
 
-    <h3>1-1. 회원 정보</h3>
-    
-    <table>
-      <thead>
-        <tr>
-          <th>수집 및 이용 목적</th>
-          <th>수집하는 개인정보 항목</th>
-          <th>보유 및 이용기간</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>회원가입, 회원자격 유지·관리</td>
-          <td>이메일 주소, 비밀번호(SHA-256 해시처리 후 저장)</td>
-          <td>회원 탈퇴 시 파기</td>
-        </tr>
-        <tr>
-          <td>SNS 간편 회원가입 처리</td>
-          <td>구글 ID, 프로필 정보(성명, 닉네임, 프로필사진), 구글 계정(이메일)</td>
-          <td>회원 탈퇴 시 파기</td>
-        </tr>
-        <tr>
-          <td>서비스 이용, 개선 및 개발</td>
-          <td><strong>필수:</strong> 성명, 닉네임, 생년월일, 성별, 이메일 주소, AI 대화 정보, 서비스 이용기록, 기기정보<br><strong>선택:</strong> 전화번호</td>
-          <td>회원 탈퇴 후 1년</td>
-        </tr>
-      </tbody>
-    </table>
+        <hr>
 
-    <h3>1-2. 자동 수집 정보</h3>
-    
-    <p>서비스 이용과정에서 아래 정보가 자동으로 생성되어 수집될 수 있습니다:</p>
-    <ul>
-      <li>IP 주소</li>
-      <li>서비스 이용 기록</li>
-      <li>기기 정보(기기고유번호, OS버전, 모델명 등)</li>
-      <li>통신기록</li>
-    </ul>
+        <h2>1. 개인정보의 처리목적, 처리 항목, 보유 및 이용 기간</h2>
 
-    <h2>2. 14세 미만 아동의 개인정보</h2>
-    
-    <ol>
-      <li>회사는 14세 미만 아동의 개인정보를 처리하기 위하여 법정대리인으로부터 동의를 받습니다.</li>
-      <li>법정대리인의 동의는 이메일 인증 방식으로 확인합니다.</li>
-    </ol>
+        <p>회사는 다음과 같이 이용자의 개인정보를 수집합니다. 처리하고 있는 개인정보는 다음의 수집·이용 목적 이외의 용도로는 활용되지 않으며, 수집·이용 목적이 변경되는 경우에는 개인정보보호법에 따라 별도의 동의를 받는 등 필요한 조치를 이행합니다.</p>
 
-    <h2>3. 개인정보 처리위탁</h2>
-    
-    <p>회사는 현재 다음과 같이 개인정보 처리 업무를 위탁하고 있습니다.</p>
-    
-    <table>
-      <thead>
-        <tr>
-          <th>수탁자</th>
-          <th>위탁업무 내용</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>Google LLC</td>
-          <td>AI 서비스 제공</td>
-        </tr>
-        <tr>
-          <td>Anthropic PBC</td>
-          <td>AI 서비스 제공</td>
-        </tr>
-        <tr>
-          <td>Google Firebase</td>
-          <td>서비스 인프라 운영 및 관리</td>
-        </tr>
-      </tbody>
-    </table>
+        <h3>1-1. 회원 정보</h3>
 
-    <h2>4. 개인정보 국외 이전</h2>
-    
-    <p>회사는 서비스 제공을 위하여 다음과 같이 개인정보를 미국 소재 서버로 이전하고 있습니다. 국외 이전을 거부할 경우 서비스 이용이 불가능합니다.</p>
-    
-    <table>
-      <thead>
-        <tr>
-          <th>이전받는 자</th>
-          <th>이전 항목</th>
-          <th>이용 목적</th>
-          <th>보유 기간</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>Google LLC / 미국</td>
-          <td>대화 텍스트, 닉네임, 연령대, 성별</td>
-          <td>AI 서비스 제공</td>
-          <td>회원탈퇴 또는 위탁계약 종료시</td>
-        </tr>
-        <tr>
-          <td>Anthropic PBC / 미국</td>
-          <td>대화 텍스트, 닉네임, 연령대, 성별</td>
-          <td>AI 서비스 제공</td>
-          <td>회원탈퇴 또는 위탁계약 종료시</td>
-        </tr>
-      </tbody>
-    </table>
+        <table>
+            <thead>
+                <tr>
+                    <th>수집 및 이용 목적</th>
+                    <th>수집하는 개인정보 항목</th>
+                    <th>보유 및 이용기간</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>회원가입, 회원자격 유지·관리</td>
+                    <td>이메일 주소, 비밀번호(SHA-256 해시처리 후 저장, 원문 미보관)</td>
+                    <td>회원 탈퇴 시 파기</td>
+                </tr>
+                <tr>
+                    <td>SNS 간편 회원가입 처리, 정보주체 식별·인증, 로그인 연동, 회원자격 유지·관리</td>
+                    <td>구글 간편 회원가입 시: 구글 ID, 프로필 정보{성명, 닉네임(가명), 프로필사진}, 구글 계정(이메일)<br>※ 애플·네이버·카카오 간편 로그인은 향후 서비스 업데이트 시 제공 예정이며, 제공 시점에 본 방침을 개정합니다.</td>
+                    <td>회원 탈퇴 시 파기</td>
+                </tr>
+                <tr>
+                    <td>법정대리인 동의 처리</td>
+                    <td>보호자의 이름, 생년월일, 성별, 내/외국인 여부, 본인과의 관계, 이메일 주소</td>
+                    <td>법정대리인 동의 처리 후 파기</td>
+                </tr>
+                <tr>
+                    <td>서비스 이용, 서비스 개선 및 개발, 부정 이용 확인, 고객 서비스 처리 (단, 닉네임(가명) 정보는 AI 개인화 응답 생성 목적 범위 내에서 처리)</td>
+                    <td><strong>필수 수집</strong>: 성명, 닉네임(가명), 생년월일, 성별, 이메일 주소, 아이디, 비밀번호(SHA-256 해시처리 후 저장, 원문 미보관), AI 대화 정보(텍스트 기반 대화 내용), 서비스 이용 행태 정보(입력 정보 및 결과물), 기타 서비스 이용기록, 기기정보, 기기식별자, IP<br><strong>선택 수집</strong>: 전화번호</td>
+                    <td>회원 탈퇴 시 파기</td>
+                </tr>
+            </tbody>
+        </table>
 
-    <h2>5. 개인정보의 파기절차 및 방법</h2>
-    
-    <ol>
-      <li>회사는 보유·이용기간의 경과, 처리목적 달성 등 개인정보가 불필요하게 되었을 때 지체없이 파기합니다.</li>
-      <li>법령에 따라 보존이 필요한 경우 별도 DB로 분리 보관합니다.</li>
-      <li><strong>파기 방법:</strong> 전자적 파일은 복구 불가능한 방법으로, 종이 문서는 분쇄 또는 소각하여 파기합니다.</li>
-    </ol>
+        <h3>1-2. 선택적 서비스 이용자 정보</h3>
 
-    <h2>6. 이용자 및 법정대리인의 권리와 행사방법</h2>
-    
-    <ol>
-      <li>이용자 및 법정대리인은 언제든지 개인정보의 조회, 수정, 삭제, 처리정지를 요청할 수 있습니다.</li>
-      <li>권리 행사는 서면, 전화, 전자우편 등을 통하여 할 수 있으며, 회사는 지체없이 조치합니다.</li>
-      <li>개인정보 오류 정정을 요구하신 경우 정정 완료 전까지 해당 정보를 이용하지 않습니다.</li>
-    </ol>
+        <table>
+            <thead>
+                <tr>
+                    <th>수집 및 이용 목적</th>
+                    <th>수집하는 개인정보 항목</th>
+                    <th>보유 및 이용기간</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>신규 기능 및 서비스 안내, 이벤트 및 프로모션 정보</td>
+                    <td>이름, 이메일 주소</td>
+                    <td>동의 철회시 또는 회원 탈퇴시까지</td>
+                </tr>
+            </tbody>
+        </table>
 
-    <h2>7. 개인정보의 기술적·관리적 보호대책</h2>
-    
-    <p>회사는 개인정보 보호를 위해 다음과 같은 조치를 취하고 있습니다:</p>
-    
-    <ul>
-      <li><strong>비밀번호 암호화:</strong> SHA-256 해시 알고리즘 사용</li>
-      <li><strong>해킹 방지:</strong> 최신 백신 프로그램 및 침입차단 시스템 운영</li>
-      <li><strong>암호화 통신:</strong> 네트워크상 안전한 전송 보장</li>
-      <li><strong>처리자 최소화:</strong> 담당자 교육 및 내부 관리 철저</li>
-    </ul>
+        <h3>1-3. 자동 수집 정보</h3>
 
-    <h2>8. 개인정보 보호책임자</h2>
-    
-    <p>회사는 개인정보 처리에 관한 업무를 총괄하는 개인정보 보호책임자를 지정하고 있습니다.</p>
-    
-    <table>
-      <thead>
-        <tr>
-          <th>구분</th>
-          <th>내용</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>부서 / 직급</td>
-          <td>대표자</td>
-        </tr>
-        <tr>
-          <td>이름</td>
-          <td>윤승현</td>
-        </tr>
-        <tr>
-          <td>이메일</td>
+        <p>서비스 이용과정에서 아래 자동 수집 정보가 생성되어 수집, 저장, 조합, 분석될 수 있습니다.</p>
+        <ul>
+            <li>IP 주소, 서비스 이용 기록, 기기 정보(기기고유번호, OS버전, 모델명, 제조사 정보 등), 통신기록 등</li>
+        </ul>
+
+        <hr>
+
+        <h2>2. 14세 미만 아동의 개인정보</h2>
+
+        <p>회사는 14세 미만 아동의 개인정보를 처리하기 위하여 동의가 필요한 경우에는 해당 아동의 법정대리인으로부터 동의를 받습니다.</p>
+
+        <p>회사는 14세 미만 아동의 개인정보 처리에 관하여 그 법정대리인의 동의를 받을 때에는 아동에게 법정대리인의 성명, 휴대전화번호와 같이 최소한의 정보를 요구할 수 있으며, 동의 내용을 게재한 인터넷 사이트에 법정대리인이 동의 여부를 표시하도록 하고, 그 동의 표시를 확인하였음을 법정대리인의 이메일 주소로 알리는 방법으로 그 사실을 확인합니다.</p>
+
+        <p>※ SMS 인증은 향후 서비스 업데이트시 도입 예정이며 도입시 본 방침을 개정합니다.</p>
+
+        <hr>
+
+        <h2>3. 개인정보 처리위탁</h2>
+
+        <p>회사는 현재 다음과 같이 개인정보 처리 업무를 위탁하고 있습니다.</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>수탁자</th>
+                    <th>위탁업무 내용</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Google LLC</td>
+                    <td>AI 서비스 제공</td>
+                </tr>
+                <tr>
+                    <td>Anthropic PBC</td>
+                    <td>AI 서비스 제공</td>
+                </tr>
+                <tr>
+                    <td>OpenAI, PBC</td>
+                    <td>AI 서비스 제공</td>
+                </tr>
+                <tr>
+                    <td>Google Firebase (FCM)</td>
+                    <td>서비스 인프라 운영 및 관리</td>
+                </tr>
+                <tr>
+                    <td>Google (Firebase Analytics)</td>
+                    <td>AI 성능 모니터링 및 서비스 이용 분석</td>
+                </tr>
+                <tr>
+                    <td>Google (Firebase Crashlytics)</td>
+                    <td>오류 추적 및 안정성 모니터링 활성화</td>
+                </tr>
+                <tr>
+                    <td>Google (Firebase Realtime Database)</td>
+                    <td>온라인 상태 실시간 감지</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p>회사는 개인정보 처리 업무 위탁 시 이용자의 개인정보가 안전하게 처리될 수 있도록 관리·감독하며 다른 목적으로 이용자의 개인정보를 처리하지 않도록 제한합니다.</p>
+
+        <p>위탁업무의 내용이나 수탁자가 변경될 경우에는 지체없이 본 개인정보 처리방침을 통하여 공개하도록 하겠습니다.</p>
+
+        <hr>
+
+        <h2>4. 개인정보 국외 이전</h2>
+
+        <p>회사는 서비스 제공을 위하여 서비스 이용자로부터 수집한 개인정보를 아래와 같이 국외에 이전하고 있습니다.</p>
+
+        <p>국외 이전을 거부할 경우 서비스 이용이 불가능합니다. 국외 이전을 원치 않을 경우 회원 탈퇴를 진행하실 수 있습니다.</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>관련 근거</th>
+                    <th>이전하는 개인정보 항목</th>
+                    <th>이전받는 자/국가</th>
+                    <th>이전 시기 및 방법</th>
+                    <th>이용 목적</th>
+                    <th>기간</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>「개인정보 보호법」 제28조의8 제1항제3호</td>
+                    <td>대화 텍스트, 닉네임(가명), 연령대, 성별</td>
+                    <td>Google LLC / 미국</td>
+                    <td rowspan="6">서비스 이용시 네트워크를 통한 전송</td>
+                    <td>AI 서비스 제공</td>
+                    <td rowspan="6">회원탈퇴 또는 위탁계약 종료 중 먼저 도달한 날</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td>Anthropic PBC / 미국</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td>OpenAI, PBC / 미국</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>수집하는 개인정보의 항목 및 수집방법에 명시된 개인정보 항목 일체</td>
+                    <td>Google Firebase(FCM) / 미국</td>
+                    <td>서비스 인프라 운영 및 관리</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>앱 이벤트 로그 (개인식별 정보 미포함)</td>
+                    <td>Google (Firebase Analytics) / 미국</td>
+                    <td>AI 성능 모니터링</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>오류 로그, 기기 정보, OS 버전</td>
+                    <td>Google (Firebase Crashlytics) / 미국</td>
+                    <td>오류 추적</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>사용자 접속 상태</td>
+                    <td>Google (Firebase Realtime Database) / 미국</td>
+                    <td></td>
+                    <td>온라인 상태 감지</td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <hr>
+
+        <h2>5. 개인정보의 파기절차 및 방법</h2>
+
+        <p>회사는 이용자의 개인정보를 원칙적으로 보유·이용기간의 경과, 처리목적 달성, 서비스 이용약관에 따른 계약해지 등 개인 정보가 불필요하게 되었을 때에는 지체없이 해당 개인정보를 파기합니다.</p>
+
+        <p>이용자로부터 동의 받은 개인정보 보유기간이 경과하거나 처리목적이 달성되었음에도 불구하고 다른 법령에 따라 개인정보를 계속 보존하여야 하는 경우에는 해당 개인정보를 별도의 데이터베이스(DB)로 옮기거나 보관장소를 달리하여 보존합니다.</p>
+
+        <h3>5-1. 법령에 따른 보존 기간</h3>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>법령</th>
+                    <th>항목</th>
+                    <th>기간</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>전자상거래 등에서의 소비자보호에 관한 법률</td>
+                    <td>계약 또는 청약철회 등에 관한 기록</td>
+                    <td>5년</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>대금결제 및 재화 등의 공급에 관한 기록</td>
+                    <td>5년</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>소비자의 불만 또는 분쟁 처리에 관한 기록</td>
+                    <td>3년</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>표시·광고에 관한 기록</td>
+                    <td>6개월</td>
+                </tr>
+                <tr>
+                    <td>위치정보의 보호 및 이용 등에 관한 법률</td>
+                    <td>개인위치정보에 관한 기록</td>
+                    <td>6개월</td>
+                </tr>
+                <tr>
+                    <td>전자금융거래법</td>
+                    <td>전자금융 거래에 관한 기록</td>
+                    <td>5년</td>
+                </tr>
+                <tr>
+                    <td>통신비밀보호법</td>
+                    <td>서비스 이용 관련 개인정보 (컴퓨터통신, 인터넷 로그기록자료, 접속지 추적자료 등)</td>
+                    <td>3개월</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>5-2. 파기 절차 및 방법</h3>
+
+        <ul>
+            <li><strong>파기 절차</strong>: 회사는 파기 사유가 발생한 개인정보를 선정하고, 개인정보 보호 책임자의 승인 절차를 거쳐 파기합니다.</li>
+            <li><strong>파기 방법</strong>: 회사는 전자적 파일 형태로 기록·저장된 개인정보는 기록을 재생할 수 없도록 기술적인 방법 또는 물리적인 방법을 이용하여 파기하며, 종이에 출력된 개인정보는 분쇄기로 분쇄하거나 소각 등을 통하여 파기합니다.</li>
+        </ul>
+
+        <hr>
+
+        <h2>6. 이용자 및 법정대리인의 권리와 그 행사방법</h2>
+
+        <p>이용자(만 14세 미만의 경우는 법정대리인을 말함) 및 법정대리인은 언제든지 개인정보의 조회, 수정, 삭제, 처리정지, 동의 철회를 요청할 수 있습니다. 단, 만 14세 미만 아동의 권리 행사는 법정대리인이 직접 해야 하며, 만 14세 이상의 미성년자는 본인이 직접 또는 법정대리인을 통하여 개인정보 관련 권리를 행사할 수 있습니다.</p>
+
+        <p>권리 행사는 회사에 대해 개인정보 보호법 시행령 제41조 제1항에 따라 서면, 전화, 전자 우편, 팩스(FAX), 인터넷 등을 통하여 하실 수 있으며, 회사는 이에 대해 지체없이 조치하겠습니다.</p>
+
+        <p>정보주체의 법정대리인이나 위임을 받은 자 등 대리인을 통하여 권리행사를 하는 경우 "개인정보 처리 방법에 관한 고시" [별지 11] 서식에 따른 위임장을 제출하셔야 합니다.</p>
+
+        <p>정보주체가 개인정보 열람 및 처리 정지를 요구할 권리는 개인정보 보호법 제35조 제4항 및 제37조 제2항에 의하여 제한될 수 있으며 다른 법령에서 그 개인정보가 수집 대상으로 명시되어 있는 경우에는 해당 개인정보의 삭제를 요구할 수 없습니다.</p>
+
+        <p>이용자께서 개인정보의 오류에 대한 정정을 요구하신 경우에는 정정을 완료하기 전까지 당해 개인정보를 이용 또는 제공하지 않습니다. 또한 잘못된 개인정보를 제3자에게 이미 제공한 경우에는 정정 처리결과를 제3자에게 지체없이 통지하여 정정이 이루어지도록 하겠습니다.</p>
+
+        <p>회사는 권리 행사를 한 자가 본인이거나 정당한 대리인인지를 확인합니다.</p>
+
+        <p>이용자는 개인정보보호 담당부서로 권리 행사와 관련하여 궁금한 사항 및 권리행사 방법 등을 문의할 수 있습니다.</p>
+
+        <hr>
+
+        <h2>7. 개인정보 자동수집 장치의 설치·운영 및 거부에 관한 사항</h2>
+
+        <p>회사는 서비스 제공을 위해 앱 내 로컬 저장소(SharedPreferences, Hive)에서 기기 식별자를 처리하고 있습니다.</p>
+
+        <p>이용자는 기기 설정에서 위 데이터를 삭제할 수 있으나, 이 경우 일부 서비스 이용이 제한될 수 있습니다.</p>
+
+        <hr>
+
+        <h2>8. 개인정보의 기술적·관리적 보호대책</h2>
+
+        <p>회사는 이용자들의 개인정보를 처리함에 있어 개인정보가 분실, 도난, 유출, 변조 또는 훼손되지 않도록 안전성 확보를 위하여 다음과 같은 기술적·관리적 보호대책을 강구하고 있습니다.</p>
+
+        <ul>
+            <li><strong>비밀번호의 암호화</strong>: 이용자의 비밀번호는 일방향 암호화하여 저장 및 관리되고 있으며, 개인정보의 확인, 변경은 비밀번호를 알고 있는 본인에 의해서만 가능합니다.</li>
+            <li><strong>해킹 등에 대비한 대책</strong>: 회사는 해킹, 컴퓨터 바이러스 등 정보통신망 침입에 의해 이용자의 개인정보가 유출되거나 훼손되는 것을 막기 위해 최선을 다하고 있습니다. 최신 백신 프로그램을 이용하여 이용자들의 개인정보나 자료가 유출되거나 손상되지 않도록 방지하고 있습니다. 만일의 사태에 대비하여 침입차단 시스템을 이용하여 보안에 최선을 다하고 있습니다. 민감한 개인정보는 암호화 통신 등을 통하여 네트워크상에서 개인정보를 안전하게 전송할 수 있도록 하고 있습니다.</li>
+            <li><strong>개인정보 처리 최소화 및 교육</strong>: 회사는 개인정보 관련 처리 담당자를 최소한으로 제한하며, 개인정보 처리자에 대한 교육 등 관리적 조치를 통해 법령 및 내부방침 등의 준수를 강조하고 있습니다.</li>
+            <li><strong>개인정보보호 전담담당부서 운영</strong>: 회사는 개인정보의 보호를 위해 개인정보보호 전담부서를 운영하고 있으며, 개인정보처리방침의 이행사항 및 담당자의 준수여부를 확인하여 문제가 발견될 경우 즉시 해결하고 바로 잡을 수 있도록 최선을 다하고 있습니다.</li>
+        </ul>
+
+        <hr>
+
+        <h2>9. 개인정보 보호책임자</h2>
+
+        <p>회사는 개인정보 처리에 관한 업무를 총괄해서 책임지고, 개인정보 처리와 관련한 고객님의 불만처리 및 피해구제 등을 위하여 아래와 같이 개인정보 보호책임자 및 개인정보보호 담당자를 지정하고 있습니다.</p>
+
+        <p>이용자께서는 회사의 서비스(또는 사업)를 이용하시면서 발생한 모든 개인정보와 관련된 문의, 불만처리, 피해구제 등에 관한 사항을 개인정보 보호책임자 및 담당자에게 문의하실 수 있습니다. 회사는 이용자의 문의에 대해 지체 없이 답변 및 처리해드릴 것입니다.</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>구분</th>
+                    <th>개인정보 보호책임자</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>부서 / 직급</td>
+                    <td>대표자</td>
+                </tr>
+                <tr>
+                    <td>이름</td>
+                    <td>윤승현</td>
+                </tr>
+                <tr>
+                    <td>이메일</td>
           <td>leros0131@gmail.com</td>
-        </tr>
-      </tbody>
-    </table>
+                </tr>
+            </tbody>
+        </table>
 
-    <h2>9. 개인정보침해 관련 상담 및 신고</h2>
-    
-    <p>개인정보 침해에 대한 피해구제, 상담 등이 필요하신 경우 아래 기관에 문의하실 수 있습니다:</p>
-    
-    <table>
-      <thead>
-        <tr>
-          <th>기관</th>
-          <th>연락처</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>개인정보 침해신고센터</td>
-          <td>(국번없이) 118 / privacy.kisa.or.kr</td>
-        </tr>
-        <tr>
-          <td>대검찰청 사이버범죄수사단</td>
-          <td>(국번없이) 1301 / www.spo.go.kr</td>
-        </tr>
-        <tr>
-          <td>경찰청 사이버안전국</td>
-          <td>(국번없이) 182 / www.cyber.go.kr</td>
-        </tr>
-      </tbody>
-    </table>
+        <hr>
 
-    <h2>10. 고지의 의무</h2>
-    
-    <ol>
-      <li>현 개인정보처리방침은 법령, 정부의 정책 또는 회사 내부정책 등에 따라 변경될 수 있으며, 변경 시 시행 7일 전부터 공지합니다.</li>
-      <li><strong class="highlight">본 개인정보처리방침은 2026년 5월 1일부터 적용됩니다.</strong></li>
-    </ol>
+        <h2>10. 기타 개인정보침해에 대한 신고 및 상담</h2>
 
-    <div style="margin-top: 48px; padding: 24px; background: #f8faf5; border-radius: 12px; border-left: 4px solid var(--color-accent);">
-      <p style="font-weight: 600; color: var(--color-accent); margin-bottom: 8px;">⚠️ 중요 안내</p>
-      <p style="font-size: 14px; color: var(--color-muted);">
-        본 개인정보처리방침은 현재 서비스 준비 단계에 있으며, 정식 서비스 출시 전 최종 검토를 거쳐 확정될 예정입니다. 
-        문의사항이 있으시면 <strong>leros0131@gmail.com</strong>으로 연락주시기 바랍니다.
-      </p>
+        <p>이용자는 아래의 기관에 대해 개인정보 침해에 대한 피해구제 상담 등을 문의하실 수 있습니다. 아래의 기관은 정보기관 소속으로서, 회사의 자체적인 개인정보 불만처리 또는 개인정보 피해구제 결과에 만족하지 못하실 경우, 자세한 도움이 필요하실 경우에는 문의하여 주시기 바랍니다.</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>기관</th>
+                    <th>연락처</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>개인정보 침해신고센터</td>
+                    <td>(국번없이) 118 / privacy.kisa.or.kr</td>
+                </tr>
+                <tr>
+                    <td>대검찰청 사이버범죄수사단</td>
+                    <td>(국번없이) 1301 / www.spo.go.kr</td>
+                </tr>
+                <tr>
+                    <td>경찰청 사이버안전국</td>
+                    <td>(국번없이) 182 / www.cyber.go.kr</td>
+                </tr>
+                <tr>
+                    <td>전자거래분쟁조정위원회</td>
+                    <td>1661-5714 / https://www.ecmc.or.kr</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <hr>
+
+        <h2>11. 고지의 의무</h2>
+
+        <p>현 개인정보처리방침은 법령, 정부의 정책 또는 회사 내부정책 등 필요에 의하여 변경될 수 있으며, 내용추가, 삭제 및 수정이 있을 시에는 홈페이지의 '공지사항'을 통해 시행 7일 전부터 고지할 것입니다.</p>
+
+        <p><strong>현 개인정보처리방침은 2026년 [*]월 [*]일부터 적용됩니다.</strong></p>
     </div>
-    
-    <div style="text-align: center;">
-      <a href="index.html" class="back-link">← 홈으로 돌아가기</a>
-    </div>
-  </div>
 </body>
 </html>
