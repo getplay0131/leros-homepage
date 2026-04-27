@@ -9,13 +9,14 @@
     <link href="https://fonts.googleapis.com/css2?family=Satoshi:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #FF6B6B;
-            --secondary-color: #4ECDC4;
-            --accent-color: #45B7D1;
-            --text-primary: #2C3E50;
-            --text-secondary: #546E7A;
-            --bg-glass: rgba(255, 255, 255, 0.25);
-            --border-glass: rgba(255, 255, 255, 0.18);
+            --color-bg: #faf9f6;
+            --color-primary: #5e9e72;
+            --color-accent: #e07b6a;
+            --color-text: #28241e;
+            --color-muted: #78736a;
+            --color-border: #e6e2da;
+            --bg-glass: rgba(255, 255, 255, 0.7);
+            --border-glass: rgba(230, 226, 218, 0.5);
         }
 
         * {
@@ -27,10 +28,10 @@
         body {
             font-family: 'Satoshi', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             line-height: 1.6;
-            color: var(--text-primary);
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #feca57 75%, #48c9b0 100%);
-            background-size: 400% 400%;
-            animation: gradientShift 15s ease infinite;
+            color: var(--color-text);
+            background: linear-gradient(135deg, #faf9f6 0%, #f5f3ee 50%, #f0f4f1 100%);
+            background-size: 200% 200%;
+            animation: gradientShift 20s ease infinite;
             min-height: 100vh;
             padding: 20px;
         }
@@ -61,29 +62,29 @@
         h1 {
             font-size: 2.5em;
             font-weight: 700;
-            color: var(--text-primary);
+            color: var(--color-text);
             margin-bottom: 10px;
         }
 
         .subtitle {
             font-size: 1.2em;
-            color: var(--text-secondary);
+            color: var(--color-muted);
             font-weight: 500;
         }
 
         h2 {
             font-size: 1.8em;
             font-weight: 700;
-            color: var(--primary-color);
+            color: var(--color-primary);
             margin: 40px 0 20px;
             padding-bottom: 10px;
-            border-bottom: 2px solid var(--border-glass);
+            border-bottom: 2px solid var(--color-border);
         }
 
         h3 {
             font-size: 1.4em;
             font-weight: 600;
-            color: var(--accent-color);
+            color: var(--color-accent);
             margin: 30px 0 15px;
         }
 
@@ -553,6 +554,12 @@
         <p>현 개인정보처리방침은 법령, 정부의 정책 또는 회사 내부정책 등 필요에 의하여 변경될 수 있으며, 내용추가, 삭제 및 수정이 있을 시에는 홈페이지의 '공지사항'을 통해 시행 7일 전부터 고지할 것입니다.</p>
 
         <p><strong>현 개인정보처리방침은 2026년 [*]월 [*]일부터 적용됩니다.</strong></p>
+        
+        <hr style="margin: 40px 0;">
+        
+        <div style="text-align: center;">
+            <a href="index.html" style="display: inline-block; padding: 12px 30px; background: var(--color-primary); color: white; text-decoration: none; border-radius: 30px; font-weight: 600; font-size: 14px; transition: all 0.3s ease;">← 홈으로 돌아가기</a>
+        </div>
     </div>
 </body>
 </html>
